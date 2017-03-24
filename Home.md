@@ -186,7 +186,7 @@ Next we create an AMI from the running instance. Then we create an EC2 Role in t
 
 The reason we use IAM Role in this tutorial is that with IAM Role you do not need to supply your AWS Access Key and Secret Key in your code. Rather, Your code will assume the role assigned to the EC2 instance, and access the AWS resources that your EC2 instance is allowed to access. Today many people and organizations host their source code on github.com or some other public repositories. By using IAM roles you no longer hard code your AWS credentials in your application, thus eliminating the possibility of leaking your AWS credentials to the public.
 
-**(4) LEVEL 3*
+**(4) LEVEL 3**
 
 ![LEVEL 3](http://www.qyjohn.net/wp-content/uploads/2017/03/Slide6.png)
 
