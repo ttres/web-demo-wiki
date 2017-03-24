@@ -52,6 +52,12 @@ $ sudo apt-get install git mysql-server
 $ sudo apt-get install apache2 php libapache2-mod-php php-mcrypt php-mysql php-curl php-xml
 ~~~~
 
+You might need to restart your Apache web server:
+
+~~~~
+$ sudo service apache2 restart
+~~~~
+
 Then we create a MySQL database and a MySQL user for our demo. Here we use “web_demo” as the database name, and “username” as the MySQL user.
 
 ~~~~
