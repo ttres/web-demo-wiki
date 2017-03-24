@@ -49,7 +49,7 @@ If you are using Ubuntu 16.04, the software installation part is a little bit di
 ~~~~
 $ sudo apt-get update
 $ sudo apt-get install git mysql-server
-$ sudo apt-get install php libapache2-mod-php php-mcrypt php-mysql php-curl php-xml
+$ sudo apt-get install apache2 php libapache2-mod-php php-mcrypt php-mysql php-curl php-xml
 ~~~~
 
 Then we create a MySQL database and a MySQL user for our demo. Here we use “web_demo” as the database name, and “username” as the MySQL user.
