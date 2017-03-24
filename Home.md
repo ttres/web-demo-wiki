@@ -34,14 +34,12 @@ In this level, we will build a basic version with all the components deployed on
 
 Login to your AWS Console and navigate to the EC2 Console. Launch an EC2 instance with a Ubuntu 14.04 or Ubuntu 16.04 AMI. Make sure that you allocate a public IP to your EC2 instance. In your security group settings, open port 80 for HTTP and port 22 for SSH access. After the instance becomes “running” and passes health checks, SSH into your EC2 instance to setup software dependencies and download the demo code from Github to the default web server folder:
 
+If you are using Ubuntu 14.04, install the following software:
+
 ~~~~
 $ sudo apt-get update
 $ sudo apt-get install git mysql-server
 $ sudo apt-get install apache2 php5 php5-mysql php5-curl
-$ cd /var
-$ sudo chown -R ubuntu:ubuntu www
-$ cd /var/www/html
-$ git clone https://github.com/qyjohn/web-demo
 ~~~~
 
 If you are using Ubuntu 16.04, the software installation part is a little bit different:
@@ -56,6 +54,15 @@ You might need to restart your Apache web server:
 
 ~~~~
 $ sudo service apache2 restart
+~~~~
+
+Then we clone the git repository:
+
+~~~~
+$ cd /var
+$ sudo chown -R ubuntu:ubuntu www
+$ cd /var/www/html
+$ git clone https://github.com/qyjohn/web-demo
 ~~~~
 
 Then we create a MySQL database and a MySQL user for our demo. Here we use “web_demo” as the database name, and “username” as the MySQL user.
