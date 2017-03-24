@@ -28,6 +28,8 @@ In this tutorial, we will accomplish this goal through the following five levels
 
 **(2) LEVEL 0**
 
+![LEVEL 0](http://www.qyjohn.net/wp-content/uploads/2017/03/Slide3.png)
+
 In this level, we will build a basic version with all the components deployed on one single server. The web application is developed with PHP, using Apache as the web serer, with MySQL as the database to store user upload information. You do not need to write any code, because I have a set of demo code prepared for you. You just need to launch an EC2 instance, carry out some basic configurations, then deploy the demo code.
 
 Login to your AWS Console and navigate to the EC2 Console. Launch an EC2 instance with a Ubuntu 14.04 or Ubuntu 16.04 AMI. Make sure that you allocate a public IP to your EC2 instance. In your security group settings, open port 80 for HTTP and port 22 for SSH access. After the instance becomes “running” and passes health checks, SSH into your EC2 instance to setup software dependencies and download the demo code from Github to the default web server folder:
@@ -81,6 +83,8 @@ $ sudo chown -R www-data:www-data uploads
 In your browser, browse to http://ip-address/web-demo/index.php. You should see that our application is now working. You can login with your name, then upload some photos for testing. (You might have noticed that this demo application does not ask you for a password. This is because we would like to make things as simple as possible. Handling user password is a very complicate issue, which is beyond the scope of this entry level tutorial.) Then I suggest that you spend 10 minutes reading through the demo code index.php. The demo code has reasonable documentation in the form of comments, so I am not going to explain the code here.
 
 **(3) LEVEL 1**
+
+![LEVEL 1](http://www.qyjohn.net/wp-content/uploads/2017/03/Slide4.png)
 
 In this level, we will expand the basic version we have in LEVEL 0 and deploy it to multiple servers. Currently we already have a working web server, so we launched another EC2 instance and follow the steps in LEVEL 0 to get a second web server (you can skip mysql-server and the part to set up the database, because we don’t need multiple MySQL servers). Also, we know that these two web servers must write upload data to the same database server, so we launch an RDS instance and use the RDS instance as a shared database server. In front of the two web servers, we create an ELB to distribute the workload to two web servers.
 
@@ -160,6 +164,8 @@ In your browser, again browse to http://dns-name-of-elb/web-demo/index.php. You 
 
 **(3) LEVEL 2**
 
+![LEVEL 2](http://www.qyjohn.net/wp-content/uploads/2017/03/Slide5.png)
+
 Using a shared file system is probably OK for web applications with reasonably limited traffic, but will be be problematic when the traffic to your site increases. At that point you can scale out your front end to have as many web servers as you want, but your web application is limited by the capability of the shared file system running on a single server. In this level, we will resovle this issue by moving the shared storage from one web server to S3. This way, the web servers only handle critical business, while the images are being served by S3.
 
 We first terminate the web server running NFS client. Then we edit /etc/exports on the web server running NFS server to disable (comment out) the NFS exports and stop nfs-kernel-server service. We no longer need a share file system in the level.
@@ -181,6 +187,8 @@ Next we create an AMI from the running instance. Then we create an EC2 Role in t
 The reason we use IAM Role in this tutorial is that with IAM Role you do not need to supply your AWS Access Key and Secret Key in your code. Rather, Your code will assume the role assigned to the EC2 instance, and access the AWS resources that your EC2 instance is allowed to access. Today many people and organizations host their source code on github.com or some other public repositories. By using IAM roles you no longer hard code your AWS credentials in your application, thus eliminating the possibility of leaking your AWS credentials to the public.
 
 **(4) LEVEL 3*
+
+![LEVEL 3](http://www.qyjohn.net/wp-content/uploads/2017/03/Slide6.png)
 
 Now you have a scalable web application with two web servers, and you know that you can scale in and out the fleet when needed. Is it possible to scale your fleet automatically, according to the workload of your application?
 
@@ -213,6 +221,8 @@ You can do the testing by adjusting the $latency value on your existing web serv
 When you are done with this step, you can play with scaling down by creating another CloudWatch Alarm and a corresponding auto scaling policy. The CloudWatch alarm will be alarmed when the average latency is smaller than 500 ms for at least 1 minute, and the auto scaling action can be “remove 1 instance and then wait 300 seconds”.
 
 **(5) LEVEL 4**
+
+![LEVEL 4](http://www.qyjohn.net/wp-content/uploads/2017/03/Slide7.png)
 
 For many web applications, database can be a serious bottleneck. In our photo sharing demo, usually the number of view image request is much greater than the number of upload requests. It is very possible that for many view requests, the most recent N images are actually the same. However, we are connecting to the database to fetch records for the most recent N images for each and every view requests. It would be reasonable to update the images we show on the index page in an incremental way, for example, every 1 or 2 minutes.
 
