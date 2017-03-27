@@ -47,7 +47,7 @@ If you are using Ubuntu 16.04, the software installation part is a little bit di
 ~~~~
 $ sudo apt-get update
 $ sudo apt-get install git mysql-server
-$ sudo apt-get install apache2 php libapache2-mod-php php-mcrypt php-mysql php-curl php-xml
+$ sudo apt-get install apache2 php libapache2-mod-php php-mcrypt php-mysql php-curl php-xml php-memcached
 ~~~~
 
 You might need to restart your Apache web server:
