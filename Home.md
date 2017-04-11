@@ -121,10 +121,18 @@ You must have noticed that the IP address in the top left position in your brows
 
 With ELB, you can configure session stickiness so that the ELB always routes traffic from the same session to the same web server. However, for a large scale applicaion with dynamic workload, web servers are being added to, or removed from, the fleet according to workload requirements. In a worse case, a particular web server might be removed from the fleet due to a fault in the web server itself. In such cases, existing sessions might be routed to other web servers, on which there exists no login information. Therefore, it is desirable that such session information can be shared among all web servers.
 
-We user ElastiCache to resolve the issue about session sharing between multiple web servers. In the ElastiCache console, launch an ElasticCache with Memcache and obtain the endpoint information. On both web servers, install php5-memcached and configure php.ini to use memcached for session sharing.
+We user ElastiCache to resolve the issue about session sharing between multiple web servers. In the ElastiCache console, launch an ElasticCache with Memcache and obtain the endpoint information. On both web servers, install php-memcached and configure php.ini to use memcached for session sharing.
+
+On Ubuntu 14.04, use this command:
 
 ~~~~
 $ sudo apt-get install php5-memcached
+~~~~
+
+On Ubuntu 16.04, use this command instead:
+
+~~~~
+$ sudo apt-get install php-memcached
 ~~~~
 
 Then edit /etc/php5/apache2/php.ini, make the following modifications:
@@ -179,7 +187,7 @@ In your browser, again browse to http://dns-name-of-elb/web-demo/index.php. You 
 
 ![LEVEL 2](http://www.qyjohn.net/wp-content/uploads/2017/03/Slide5.png)
 
-Using a shared file system is probably OK for web applications with reasonably limited traffic, but will be be problematic when the traffic to your site increases. At that point you can scale out your front end to have as many web servers as you want, but your web application is limited by the capability of the shared file system running on a single server. In this level, we will resovle this issue by moving the shared storage from one web server to S3. This way, the web servers only handle critical business, while the images are being served by S3.
+Using a shared file system is probably OK for web applications with reasonably limited traffic, but will be be problematic when the traffic to your site increases. At that point you can scale out your front end to have as many web servers as you want, but your web application is limited by the capability of the shared file system running on a single server. In this level, we will resolve this issue by moving the shared storage from one web server to S3. This way, the web servers only handle your critical business logic, while the images are being served by S3.
 
 We first terminate the web server running NFS client. Then we edit /etc/exports on the web server running NFS server to disable (comment out) the NFS exports and stop nfs-kernel-server service. We no longer need a share file system in the level.
 
@@ -223,13 +231,13 @@ With AWS, you can use AutoScaling to scale your server fleet in a dynamic fashio
 
 (1) In your EC2 Console, create a launch configuration using the AMI and the IAM Role that we created in LEVEL 2.
 
-(2) Create an AutoScaling group using the launch configuration we created in step (2), make sure that the AutoScaling group receives traffic from your ELB. Also, change the health check type from EC2 to ELB. (This way, when the ELB determines that an instance is unhealthy, the AutoScaling group will terminate it.) You don’t need to specify any scaling policy at this point.
+(2) Create an AutoScaling group using the launch configuration we created in step (1), make sure that the AutoScaling group receives traffic from your ELB. Also, change the health check type from EC2 to ELB. (This way, when the ELB determines that an instance is unhealthy, the AutoScaling group will terminate it.) You don’t need to specify any scaling policy at this point.
 
 (3) Click on your ELB and create a new CloudWatch Alarm (ELB -> Monitoring -> Create Alarm) when the average latency is greater than 1000 ms for at least 1 minutes.
 
 (4) Click on your AutoScaling group, and create a new scaling policy (AutoScaling -> Scaling Policies), using the CloudWatch Alarm you just created. The auto scaling action can be “add 1 instance and then wait 300 seconds”. This way, if the average latency of your web application exceeds 1 second, AutoScaling will add one more instance to your fleet.
 
-You can do the testing by adjusting the $latency value on your existing web servers. Please note that to acheve 1000 ms latency, the average value of the $latency settings on all your web servers needs to be greater than 1. So, you can keep $latency = 0 on one of your webserver, and change $latency = 3 on the other web server. This way the average latency will be 1500 ms, which will trigger the CloudWatch Alarm, and hency the auto scaling policy.
+You can do the testing by adjusting the $latency value on your existing web servers. Please note that to achieve 1000 ms latency, the average value of the $latency settings on all your web servers needs to be greater than 1. So, you can keep $latency = 0 on one of your web servers, and change $latency = 3 on the other web server. This way the average latency will be 1500 ms, which will trigger the CloudWatch Alarm, and hence the auto scaling policy.
 
 When you are done with this step, you can play with scaling down by creating another CloudWatch Alarm and a corresponding auto scaling policy. The CloudWatch alarm will be alarmed when the average latency is smaller than 500 ms for at least 1 minute, and the auto scaling action can be “remove 1 instance and then wait 300 seconds”.
 
@@ -237,9 +245,9 @@ When you are done with this step, you can play with scaling down by creating ano
 
 ![LEVEL 4](http://www.qyjohn.net/wp-content/uploads/2017/03/Slide7.png)
 
-For many web applications, database can be a serious bottleneck. In our photo sharing demo, usually the number of view image request is much greater than the number of upload requests. It is very possible that for many view requests, the most recent N images are actually the same. However, we are connecting to the database to fetch records for the most recent N images for each and every view requests. It would be reasonable to update the images we show on the index page in an incremental way, for example, every 1 or 2 minutes.
+For many web applications, database can be a serious bottleneck. In our photo sharing demo, usually the number of view image requests is much greater than the number of upload requests. It is very possible that for many view requests, the most recent N images are actually the same. However, we are connecting to the database to fetch records for the most recent N images for each and every view request. It would be reasonable to update the images we show on the index page in an incremental way, for example, every 1 or 2 minutes.
 
-In this level, we will add a cache layer between the web servers and the database. When we fetch records for the most recent N images, we cache it somewhere. When there is a new view request coming in, we no longer connect to the database, but return the cached result to the user. When there is a new image upload, we update the cache. This way the cache version is always accurate.
+In this level, we will add a cache layer (cache server) between the web servers and the database. When we fetch records for the most recent N images from the database, we cache it in the cache server. When there is a new view request coming in, we no longer connect to the database, but return the cached result to the user. When there is a new image upload, we invalidate the cached version by deleting it from the cache server. When the next view request comes, we fetch records for the most recent N images from the database again, then cache this new version to the cache server. This way the cache version is always up-to-date.
 
 The demo code has support for database caching through ElastiCache, using the same ElastiCache instance for session sharing. This caching behavior is not enable by default. You can edit config.php on all web servers with details regarding the cache server:
 
