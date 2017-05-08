@@ -39,7 +39,7 @@ If you are using Ubuntu 14.04, install the following software:
 ~~~~
 $ sudo apt-get update
 $ sudo apt-get install git mysql-server
-$ sudo apt-get install apache2 php5 php5-mysql php5-curl
+$ sudo apt-get install apache2 php5 php5-mysql php5-curl php5-memcached
 ~~~~
 
 If you are using Ubuntu 16.04, the software installation part is a little bit different:
@@ -123,19 +123,7 @@ With ELB, you can configure session stickiness so that the ELB always routes tra
 
 We user ElastiCache to resolve the issue about session sharing between multiple web servers. In the ElastiCache console, launch an ElasticCache with Memcache and obtain the endpoint information. On both web servers, install php-memcached and configure php.ini to use memcached for session sharing.
 
-On Ubuntu 14.04, use this command:
-
-~~~~
-$ sudo apt-get install php5-memcached
-~~~~
-
-On Ubuntu 16.04, use this command instead:
-
-~~~~
-$ sudo apt-get install php-memcached
-~~~~
-
-Then edit /etc/php5/apache2/php.ini, make the following modifications:
+On Ubuntu 14.04, edit /etc/php5/apache2/php.ini. On Ubuntu 16.04, edit /etc/php/7.0/apache2/php.ini. Make the following modifications:
 
 ~~~~
 session.save_handler = memcached
