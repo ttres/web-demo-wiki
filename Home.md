@@ -169,6 +169,8 @@ $ sudo chown -R ubuntu:ubuntu web-demo
 $ sudo mount 172.31.0.11:/var/www/html/web-demo web-demo
 ~~~~
 
+You might get stuck at the last step, which is the mounting. The most likely reason is that the inbound Security Group of the NFS Server instance is blocking. NFS is an old protocol which requires communication on many ports. The easiest way to get around this is to have the security group policy opening all traffic to the client instance IP or even the whole VPC CIDR.
+
 In your browser, again browse to http://dns-name-of-elb/web-demo/index.php. You should see that our application is now working on multiple web servers with a load balancer as the front end, without any code changes.
 
 **(3) LEVEL 2**
