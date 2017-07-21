@@ -103,7 +103,7 @@ In this level, we will expand the basic version we have in LEVEL 0 and deploy it
 
 (1) Launch a second web server as describe in LEVEL 0.
 
-(2) Launch an RDS instance running MySQL. When launching the RDS instance, create a default database named “web_demo”. When the RDS instance becomes available, use the following command to import the demo data in web_demo.sql to the web_demo database on the RDS database:
+(2) Launch an RDS instance running MySQL. When launching the RDS instance, create a default database named “web_demo”. When the RDS instance becomes available, connect to the RDS DB server as Root and create a user as you did before for the local DB. This time, when creating the user and granting privileges, you should not use 'username'@'localhost', because the DB will be accessed from web servers but not localhost. You can use 'username'@'%' to create a user that is trusted from any source. Then, use the following command to import the demo data in web_demo.sql to the web_demo database on the RDS database:
 
 ~~~~
 $ mysql -h [endpoint-of-rds-instance] -u username -p web_demo < web_demo.sql
