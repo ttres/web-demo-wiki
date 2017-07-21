@@ -84,7 +84,7 @@ $ mysql -u username -p web_demo < web_demo.sql
 
 The LEVEL 0 demo code is implemented in a two PHP files index.php and config.php. Before we can make it work, there are some minor modifications needed:
 
-(1) Use a text editor to open config.php, then change the username and password for your MySQL installation.
+(1) Use a text editor to open config.php, then change the username and password for your MySQL installation. The example commands before created a DB user named "username" with the password "password". This is the default DB credentials configured in config.php. If you used a different username or password, update config.php accordingly.
 
 (2) Change the ownership of folder “uploads” to “www-data” so that Apache can upload files to this folder.
 
