@@ -195,6 +195,34 @@ Then we add the mounting stuff into /etc/fstab to add the following line, so tha
 <dns-endpoint-of-your-efs-file-system>:/  /efs    nfs     rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2    0       0
 ~~~~
 
+You can verify the above-mentioned configuration is working using the following commands (run them several times):
+
+~~~~
+$ df -h
+$ mount
+$ sudo umount /efs
+$ sudo mount /efs
+~~~~
+
+Now let's install the Apache and PHP:
+
+~~~~
+$ sudo apt-get update
+$ sudo apt-get install apache2 php mysql-client libapache2-mod-php php-mcrypt php-mysql php-curl php-xml php-memcached
+$ sudo service apache2 restart
+$ cd /var
+$ sudo chown -R ubuntu:ubuntu www
+$ mv www /efs
+$ sudo ln -s /efs/www www
+$ cd /var/www/html
+$ git clone https://github.com/qyjohn/web-demo
+~~~~
+
+(2) Launch an RDS instance running MySQL. When launching the RDS instance, create a default database named “web_demo”. When the RDS instance becomes available, connect to the RDS DB server as Root and create a user as you did before for the local DB. This time, when creating the user and granting privileges, you should not use 'username'@'localhost', because the DB will be accessed from web servers but not localhost. You can use 'username'@'%' to create a user that is trusted from any source. Then, use the following command to import the demo data in web_demo.sql to the web_demo database on the RDS database:
+
+$ mysql -h [endpoint-of-rds-instance] -u username -p web_demo < web_demo.sql
+
+
 **(3) LEVEL 2**
 
 ![LEVEL 2](http://www.qyjohn.net/wp-content/uploads/2017/03/Slide5.png)
