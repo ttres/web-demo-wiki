@@ -177,7 +177,7 @@ You might get stuck at the last step, which is the mounting. The most likely rea
 
 In your browser, again browse to http://dns-name-of-elb/web-demo/index.php. You should see that our application is now working on multiple web servers with a load balancer as the front end, without any code changes.
 
-**(3.1) Managed EFS Service Approach**
+**(3.2) Managed EFS Service Approach**
 
 Go to the EFS Console, and create an EFS file system. Launch an EC2 instance with Ubuntu 16.04 operating system, then install the following software and mount the EFS file system:
 
@@ -187,6 +187,12 @@ $ sudo apt-get install nfs-common
 $ sudo mkdir /efs 
 $ sudo mount sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 <dns-endpoint-of-your-efs-file-system>:/ /efs
 $ sudo chown -R ubuntu:ubuntu /efs
+~~~~
+
+Then we add the mounting stuff into /etc/fstab to add the following line, so that you do not need to manually mount the EFS file system when the operating system is rebooted.
+
+~~~~
+<dns-endpoint-of-your-efs-file-system>:/  /efs    nfs     rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2    0       0
 ~~~~
 
 **(3) LEVEL 2**
