@@ -101,91 +101,15 @@ In your browser, browse to http://ip-address/web-demo/index.php. You should see 
 
 In this level, we will expand the basic version we have in LEVEL 0 and deploy it to multiple servers. We will do this using two different approaches, the hard approach uses a self-managed NFS server, while the easy approach uses the managed EFS service. 
 
-**(3.1) Self-Managed Approach**
+**STEP 1 - Preparing the EFS File System**
 
-Currently we already have a working web server, so we launched another EC2 instance and follow the steps in LEVEL 0 to get a second web server (you can skip mysql-server and the part to set up the database, because we don’t need multiple MySQL servers). Also, we know that these two web servers must write upload data to the same database server, so we launch an RDS instance and use the RDS instance as a shared database server. In front of the two web servers, we create an ELB to distribute the workload to two web servers.
-
-(1) Launch a second web server as describe in LEVEL 0.
-
-(2) Launch an RDS instance running MySQL. When launching the RDS instance, create a default database named “web_demo”. When the RDS instance becomes available, connect to the RDS DB server as Root and create a user as you did before for the local DB. This time, when creating the user and granting privileges, you should not use 'username'@'localhost', because the DB will be accessed from web servers but not localhost. You can use 'username'@'%' to create a user that is trusted from any source. Then, use the following command to import the demo data in web_demo.sql to the web_demo database on the RDS database:
-
-~~~~
-$ mysql -h [endpoint-of-rds-instance] -u username -p web_demo < web_demo.sql
-~~~~
-
-(3) On both web servers, modify config.php with the new database server hostname, username, password, and database name.
-
-(4) Create an ELB and add the two web servers to the ELB. Since we do have Apache running on both web servers, you might want to use HTTP as the ping protocol with 80 as the ping port and “/” as the ping path for the health check parameter for your ELB.
-
-(5) In your browser, browser to http://elb-endpoint/web-demo/index.php. As you can see, our demo seems to be working on multiple servers. This is so easy!
-
-But there are issues. Sometimes your browser asks you to login, but sometime not. Also, some newly uploaded images seem to be missing, but they are back from time to time and some other images seem to be missing!
-
-You must have noticed that the IP address in the top left position in your browser changes from time to time. We use this trick to let you know which web server is processing your request. Although the two web servers are using the same set of code and the same RDS database, they do not share your session information. When you are being served by server A and login to server A, you can upload an image. But server B is not aware of the fact that you have already login on server B. So when you are being served by server B, it will ask you to login again. Also, when you upload an image to server A, it is only available on server A. If you are being served by server B, although the database has the information about that particular upload (because both web servers write to, and read from, the same database server) but server B can’t give you that image because it is on server A.
-
-With ELB, you can configure session stickiness so that the ELB always routes traffic from the same session to the same web server. However, for a large scale applicaion with dynamic workload, web servers are being added to, or removed from, the fleet according to workload requirements. In a worse case, a particular web server might be removed from the fleet due to a fault in the web server itself. In such cases, existing sessions might be routed to other web servers, on which there exists no login information. Therefore, it is desirable that such session information can be shared among all web servers.
-
-We user ElastiCache to resolve the issue about session sharing between multiple web servers. In the ElastiCache console, launch an ElasticCache with Memcache and obtain the endpoint information. On both web servers, install php-memcached and configure php.ini to use memcached for session sharing.
-
-On Ubuntu 14.04, edit /etc/php5/apache2/php.ini. On Ubuntu 16.04, edit /etc/php/7.0/apache2/php.ini. Make the following modifications:
-
-~~~~
-session.save_handler = memcached
-session.save_path = "[endpoint-to-the-elasticache-instance]:11211"
-~~~~
-
-Then you need to restart Apache on both web servers to make the new configuration effective.
-
-~~~~
-$ sudo service apache2 restart
-~~~~
-
-Now go back to your browser to do some testing. As you can see, now your session is being shared across the two web servers. You only need to login once, and your login status remains the same regardless of the back end web server.
-
-To solve the issue of image upload, you need to have a shared storage between your two web servers. One simple solution would be using one of the web servers as NFS server, which exports the /var/www/html/web-demo folder to the subnet. The second web server will act as the NFS client, mounting the remote NFS share as /var/www/html/web-demo. As long as the permissions are properly setup, the two web servers should be able to write to, and read from the same folder.
-
-On one of your web servers, use the following command to install NFS server:
-
-~~~~
-$ sudo apt-get install nfs-kernel-server
-~~~~
-
-Then edit /etc/exports to export the /var/www/html/web-demo folder (assume that 172.31.0.0/16 is the CIDR range of your subnet):
-
-~~~~
-/var/www/html/web-demo       172.31.0.0/16(rw,fsid=0,insecure,no_subtree_check,async)
-~~~~
-
-Then you need to restart the NFS server for the new export to take effect:
-
-~~~~
-$ sudo service nfs-kernel-server restart
-~~~~
-
-On the other of your web servers, use the following command to install NFS client (assume that 172.31.0.11 is the private IP address of your NFS server):
-
-~~~~
-$ sudo apt-get install nfs-common
-$ cd /var/www/html
-$ sudo rm -Rf web-demo
-$ sudo mkdir web-demo
-$ sudo chown -R ubuntu:ubuntu web-demo
-$ sudo mount 172.31.0.11:/var/www/html/web-demo web-demo
-~~~~
-
-You might get stuck at the last step, which is the mounting. The most likely reason is that the inbound Security Group of the NFS Server instance is blocking. NFS is an old protocol which requires communication on many ports. The easiest way to get around this is to have the security group policy opening all traffic to the client instance IP or even the whole VPC CIDR.
-
-In your browser, again browse to http://dns-name-of-elb/web-demo/index.php. You should see that our application is now working on multiple web servers with a load balancer as the front end, without any code changes.
-
-**(3.2) Managed EFS Service Approach**
-
-Go to the EFS Console, and create an EFS file system. Launch an EC2 instance with Ubuntu 16.04 operating system, then install the following software and mount the EFS file system:
+Go to the EFS Console and create an EFS file system. Launch an EC2 instance with Ubuntu 16.04 operating system, then install the following software and mount the EFS file system:
 
 ~~~~
 $ sudo apt-get update
 $ sudo apt-get install nfs-common
 $ sudo mkdir /efs 
-$ sudo mount sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 <dns-endpoint-of-your-efs-file-system>:/ /efs
+$ sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 <dns-endpoint-of-your-efs-file-system>:/ /efs
 $ sudo chown -R ubuntu:ubuntu /efs
 ~~~~
 
@@ -204,12 +128,19 @@ $ sudo umount /efs
 $ sudo mount /efs
 ~~~~
 
-Now let's install the Apache and PHP:
+**STEP 2 - Install the Apache and PHP**
+
+Run the following commands to install Apache and PHP.
 
 ~~~~
 $ sudo apt-get update
 $ sudo apt-get install apache2 php mysql-client libapache2-mod-php php-mcrypt php-mysql php-curl php-xml php-memcached
 $ sudo service apache2 restart
+~~~~
+
+Then we use the EFS file system to store our web application.
+
+~~~~
 $ cd /var
 $ sudo chown -R ubuntu:ubuntu www
 $ mv www /efs
@@ -218,10 +149,45 @@ $ cd /var/www/html
 $ git clone https://github.com/qyjohn/web-demo
 ~~~~
 
-(2) Launch an RDS instance running MySQL. When launching the RDS instance, create a default database named “web_demo”. When the RDS instance becomes available, connect to the RDS DB server as Root and create a user as you did before for the local DB. This time, when creating the user and granting privileges, you should not use 'username'@'localhost', because the DB will be accessed from web servers but not localhost. You can use 'username'@'%' to create a user that is trusted from any source. Then, use the following command to import the demo data in web_demo.sql to the web_demo database on the RDS database:
+**STEP 3 - Launch an RDS Instance**
 
+Launch an RDS instance running MySQL. When launching the RDS instance, create a default database named “web_demo”. When the RDS instance becomes available, connect to the RDS DB server as Root and create a user as you did before for the local DB. This time, when creating the user and granting privileges, you should not use 'username'@'localhost', because the DB will be accessed from web servers but not localhost. You can use 'username'@'%' to create a user that is trusted from any source. Then, use the following command to import the demo data in web_demo.sql to the web_demo database on the RDS database:
+
+~~~~
+$ cd /var/www/html/web-demo
 $ mysql -h [endpoint-of-rds-instance] -u username -p web_demo < web_demo.sql
+~~~~
 
+Now, modify config.php with the new database server hostname, username, password, and database name.
+
+**STEP 4 - Create an ElastiCache Memcached Instance**
+
+We user ElastiCache to resolve the issue about session sharing between multiple web servers. In the ElastiCache console, launch an ElasticCache with Memcache and obtain the endpoint information. On both web servers, install php-memcached and configure php.ini to use memcached for session sharing.
+
+Edit /etc/php/7.0/apache2/php.ini. Make the following modifications:
+
+~~~~
+session.save_handler = memcached
+session.save_path = "[endpoint-to-the-elasticache-instance]:11211"
+~~~~
+
+Then you need to restart Apache on both web servers to make the new configuration effective.
+
+~~~~
+$ sudo service apache2 restart
+~~~~
+
+**STEP 5 - Create an AMI**
+
+Now, create an AMI from the EC2 instance and launch a new EC2 instance with the AMI.
+
+**STEP 6 - Create an ELB**
+
+Create an ELB and add the two web servers to the ELB. Since we do have Apache running on both web servers, you might want to use HTTP as the ping protocol with 80 as the ping port and “/” as the ping path for the health check parameter for your ELB.
+
+**STEP 7 - Testing*
+
+In your browser, browser to http://elb-endpoint/web-demo/index.php. As you can see, our demo seems to be working on multiple servers. This is so easy!
 
 **(3) LEVEL 2**
 
