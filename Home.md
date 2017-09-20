@@ -32,17 +32,7 @@ In this tutorial, we will accomplish this goal through the following five levels
 
 In this level, we will build a basic version with all the components deployed on one single server. The web application is developed with PHP, using Apache as the web serer, with MySQL as the database to store user upload information. You do not need to write any code, because I have a set of demo code prepared for you. You just need to launch an EC2 instance, carry out some basic configurations, then deploy the demo code.
 
-Login to your AWS Console and navigate to the EC2 Console. Launch an EC2 instance with a Ubuntu 14.04 or Ubuntu 16.04 AMI. Make sure that you allocate a public IP to your EC2 instance. In your security group settings, open port 80 for HTTP and port 22 for SSH access. After the instance becomes “running” and passes health checks, SSH into your EC2 instance to setup software dependencies and download the demo code from Github to the default web server folder:
-
-If you are using Ubuntu 14.04, install the following software:
-
-~~~~
-$ sudo apt-get update
-$ sudo apt-get install git mysql-server
-$ sudo apt-get install apache2 php5 php5-mysql php5-curl php5-memcached
-~~~~
-
-If you are using Ubuntu 16.04, the software installation part is a little bit different:
+Login to your AWS Console and navigate to the EC2 Console. Launch an EC2 instance with an Ubuntu 16.04 AMI. Make sure that you allocate a public IP to your EC2 instance. In your security group settings, open port 80 for HTTP and port 22 for SSH access. After the instance becomes “running” and passes health checks, SSH into your EC2 instance to setup software dependencies and download the demo code from Github to the default web server folder:
 
 ~~~~
 $ sudo apt-get update
@@ -147,6 +137,8 @@ $ mv www /efs
 $ sudo ln -s /efs/www www
 $ cd /var/www/html
 $ git clone https://github.com/qyjohn/web-demo
+$ cd web-demo
+$ sudo chown -R www-data:www-data uploads
 ~~~~
 
 **STEP 3 - Launch an RDS Instance**
