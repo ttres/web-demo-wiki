@@ -93,7 +93,11 @@ In this level, we will expand the basic version we have in LEVEL 0 and deploy it
 
 **STEP 1 - Preparing the EFS File System**
 
-Go to the EFS Console and create an EFS file system. Launch an EC2 instance with Ubuntu 16.04 operating system, then install the following software and mount the EFS file system:
+Terminate the previous EC2 instance we have in Level 0. We no longer need it.
+
+Go to the EFS Console and create an EFS file system. 
+
+Launch an EC2 instance with Ubuntu 16.04 operating system, then install the following software and mount the EFS file system:
 
 ~~~~
 $ sudo apt-get update
