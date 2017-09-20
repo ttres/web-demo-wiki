@@ -99,7 +99,11 @@ In your browser, browse to http://ip-address/web-demo/index.php. You should see 
 
 ![LEVEL 1](http://www.qyjohn.net/wp-content/uploads/2017/03/Slide4.png)
 
-In this level, we will expand the basic version we have in LEVEL 0 and deploy it to multiple servers. Currently we already have a working web server, so we launched another EC2 instance and follow the steps in LEVEL 0 to get a second web server (you can skip mysql-server and the part to set up the database, because we don’t need multiple MySQL servers). Also, we know that these two web servers must write upload data to the same database server, so we launch an RDS instance and use the RDS instance as a shared database server. In front of the two web servers, we create an ELB to distribute the workload to two web servers.
+In this level, we will expand the basic version we have in LEVEL 0 and deploy it to multiple servers. We will do this using two different approaches, the hard approach uses a self-managed NFS server, while the easy approach uses the managed EFS service. 
+
+**(3.1) Self-Managed Approach**
+
+Currently we already have a working web server, so we launched another EC2 instance and follow the steps in LEVEL 0 to get a second web server (you can skip mysql-server and the part to set up the database, because we don’t need multiple MySQL servers). Also, we know that these two web servers must write upload data to the same database server, so we launch an RDS instance and use the RDS instance as a shared database server. In front of the two web servers, we create an ELB to distribute the workload to two web servers.
 
 (1) Launch a second web server as describe in LEVEL 0.
 
@@ -172,6 +176,18 @@ $ sudo mount 172.31.0.11:/var/www/html/web-demo web-demo
 You might get stuck at the last step, which is the mounting. The most likely reason is that the inbound Security Group of the NFS Server instance is blocking. NFS is an old protocol which requires communication on many ports. The easiest way to get around this is to have the security group policy opening all traffic to the client instance IP or even the whole VPC CIDR.
 
 In your browser, again browse to http://dns-name-of-elb/web-demo/index.php. You should see that our application is now working on multiple web servers with a load balancer as the front end, without any code changes.
+
+**(3.1) Managed EFS Service Approach**
+
+Go to the EFS Console, and create an EFS file system. Launch an EC2 instance with Ubuntu 16.04 operating system, then install the following software and mount the EFS file system:
+
+~~~~
+$ sudo apt-get update
+$ sudo apt-get install nfs-common
+$ sudo mkdir /efs 
+$ sudo mount sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 <dns-endpoint-of-your-efs-file-system>:/ /efs
+$ sudo chown -R ubuntu:ubuntu /efs
+~~~~
 
 **(3) LEVEL 2**
 
