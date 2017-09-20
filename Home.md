@@ -185,15 +185,9 @@ In your browser, browser to http://elb-endpoint/web-demo/index.php. As you can s
 
 ![LEVEL 2](http://www.qyjohn.net/wp-content/uploads/2017/03/Slide5.png)
 
-Using a shared file system is probably OK for web applications with reasonably limited traffic, but will be be problematic when the traffic to your site increases. At that point you can scale out your front end to have as many web servers as you want, but your web application is limited by the capability of the shared file system running on a single server. In this level, we will resolve this issue by moving the shared storage from one web server to S3. This way, the web servers only handle your critical business logic, while the images are being served by S3.
+Using a shared file system is probably OK for web applications with reasonably limited traffic, but will be be problematic when the traffic to your site increases. At that point you can scale out your front end to have as many web servers as you want, but your web application is limited by the capability of the shared file system. In this level, we will resolve this issue by moving the storage from EFS to S3. This way, the web servers only handle your critical business logic, while the images are being served by S3.
 
-We first terminate the web server running NFS client. Then we edit /etc/exports on the web server running NFS server to disable (comment out) the NFS exports and stop nfs-kernel-server service. We no longer need a share file system in the level.
-
-~~~~
-$ sudo service nfs-kernel-server stop
-~~~~
-
-Next, you will need to edit config.php and make some minor changes. In this configuration file, $s3_bucket is the name of the S3 bucket for share storage, and $s3_baseurl is the URL pointing to the S3 endpoint in the region hosting your S3 bucket. You can find the S3 endpoint from http://docs.aws.amazon.com/general/latest/gr/rande.html. you can also identify this end point in the S3 Console by viewing the properties of an S3 object in the S3 bucket.
+You will need to edit config.php and make some minor changes. In this configuration file, $s3_bucket is the name of the S3 bucket for share storage, and $s3_baseurl is the URL pointing to the S3 endpoint in the region hosting your S3 bucket. You can find the S3 endpoint from http://docs.aws.amazon.com/general/latest/gr/rande.html. you can also identify this end point in the S3 Console by viewing the properties of an S3 object in the S3 bucket.
 
 ~~~~
 $storage_option = "s3";
