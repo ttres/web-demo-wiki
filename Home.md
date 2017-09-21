@@ -220,7 +220,7 @@ And, in index.php, there is a corresponding statement:
 sleep($latency);
 ~~~~
 
-That is, when a user request index.php, PHP will sleep for $latency seconds. As we know, as the workload increases, the CPU utilization (as well as other factors) increases, resulting in an increase in latency. By manually manipulating the $latency setting, we can simulate heavy workload to your web application, which is reflected in the average latency. It should be noted that you can change the latency simulation settings on each web server. When you have two web servers and you set $latency = 0 on one server and $latency = 1 on the other server, the average latency will be 0.5 second.
+That is, when a user request index.php, PHP will sleep for $latency seconds. As we know, as the workload increases, the CPU utilization (as well as other factors) increases, resulting in an increase in latency. By manually manipulating the $latency setting, we can simulate heavy workload to your web application, which is reflected in the average latency. 
 
 With AWS, you can use AutoScaling to scale your server fleet in a dynamic fashion, according to the wordload of the fleet. In this tutorial, we use average latency as a trigger for scaling actions. You can achieve this following these steps:
 
