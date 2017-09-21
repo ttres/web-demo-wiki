@@ -176,7 +176,7 @@ Now, create an AMI from the EC2 instance and launch a new EC2 instance with the 
 
 Create an Application Load Balancer (ALB) and register the two EC2 instances to the ALB target group. Since we do have Apache running on both web servers, you might want to use HTTP as the ping protocol with 80 as the ping port and “/” as the ping path for the health check parameter for your ELB.
 
-**STEP 7 - Testing*
+**STEP 7 - Testing**
 
 In your browser, browser to http://elb-endpoint/web-demo/index.php. As you can see, our demo seems to be working on multiple servers. This is so easy!
 
