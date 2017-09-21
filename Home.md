@@ -226,13 +226,13 @@ With AWS, you can use AutoScaling to scale your server fleet in a dynamic fashio
 
 (1) In your EC2 Console, create a launch configuration using the AMI and the IAM Role that we created in LEVEL 2.
 
-(2) Create an AutoScaling group using the launch configuration we created in step (1), make sure that the AutoScaling group receives traffic from your ELB. Also, change the health check type from EC2 to ELB. (This way, when the ELB determines that an instance is unhealthy, the AutoScaling group will terminate it.) You don’t need to specify any scaling policy at this point.
+(2) Create an AutoScaling group using the launch configuration we created in step (1), make sure that the AutoScaling group receives traffic from your ALB target group. Also, change the health check type from EC2 to ELB. (This way, when the ELB determines that an instance is unhealthy, the AutoScaling group will terminate it.) You don’t need to specify any scaling policy at this point.
 
 (3) Click on your ELB and create a new CloudWatch Alarm (ELB -> Monitoring -> Create Alarm) when the average latency is greater than 1000 ms for at least 1 minutes.
 
 (4) Click on your AutoScaling group, and create a new scaling policy (AutoScaling -> Scaling Policies), using the CloudWatch Alarm you just created. The auto scaling action can be “add 1 instance and then wait 300 seconds”. This way, if the average latency of your web application exceeds 1 second, AutoScaling will add one more instance to your fleet.
 
-You can do the testing by adjusting the $latency value on your existing web servers. Please note that to achieve 1000 ms latency, the average value of the $latency settings on all your web servers needs to be greater than 1. So, you can keep $latency = 0 on one of your web servers, and change $latency = 3 on the other web server. This way the average latency will be 1500 ms, which will trigger the CloudWatch Alarm, and hence the auto scaling policy.
+You can do the testing by adjusting the $latency value on your existing web servers. Please note the source code resides on your EFS file system, when you make the change from one of your EC2 instances, the change is reflected on all of your EC2 instances.
 
 When you are done with this step, you can play with scaling down by creating another CloudWatch Alarm and a corresponding auto scaling policy. The CloudWatch alarm will be alarmed when the average latency is smaller than 500 ms for at least 1 minute, and the auto scaling action can be “remove 1 instance and then wait 300 seconds”.
 
