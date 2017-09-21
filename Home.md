@@ -53,6 +53,13 @@ $ cd /var
 $ sudo chown -R ubuntu:ubuntu www
 $ cd /var/www/html
 $ git clone https://github.com/qyjohn/web-demo
+$ cd web-demo
+~~~~
+
+Change the ownership of folder “uploads” to “www-data” so that Apache can upload files to this folder.
+
+~~~~
+$ sudo chown -R www-data:www-data uploads
 ~~~~
 
 Then we create a MySQL database and a MySQL user for our demo. Here we use “web_demo” as the database name, and “username” as the MySQL user.
@@ -72,16 +79,7 @@ $ cd /var/www/html/web-demo
 $ mysql -u username -p web_demo < web_demo.sql
 ~~~~
 
-The LEVEL 0 demo code is implemented in a two PHP files index.php and config.php. Before we can make it work, there are some minor modifications needed:
-
-(1) Use a text editor to open config.php, then change the username and password for your MySQL installation. The example commands before created a DB user named "username" with the password "password". This is the default DB credentials configured in config.php. If you used a different username or password, update config.php accordingly.
-
-(2) Change the ownership of folder “uploads” to “www-data” so that Apache can upload files to this folder.
-
-~~~~
-$cd /var/www/html/web-demo
-$ sudo chown -R www-data:www-data uploads
-~~~~
+Use a text editor to open config.php, then change the username and password for your MySQL installation. The example commands before created a DB user named "username" with the password "password". This is the default DB credentials configured in config.php. If you used a different username or password, update config.php accordingly.
 
 In your browser, browse to http://ip-address/web-demo/index.php. You should see that our application is now working. You can login with your name, then upload some photos for testing. (You might have noticed that this demo application does not ask you for a password. This is because we would like to make things as simple as possible. Handling user password is a very complicate issue, which is beyond the scope of this entry level tutorial.) Then I suggest that you spend 10 minutes reading through the demo code index.php. The demo code has reasonable documentation in the form of comments, so I am not going to explain the code here.
 
@@ -93,11 +91,9 @@ In this level, we will expand the basic version we have in LEVEL 0 and deploy it
 
 **STEP 1 - Preparing the EFS File System**
 
-Terminate the previous EC2 instance we have in Level 0. We no longer need it.
-
 Go to the EFS Console and create an EFS file system. 
 
-Launch an EC2 instance with Ubuntu 16.04 operating system, then install the following software and mount the EFS file system:
+Terminate the previous EC2 instance because we no longer need it. Launch a new EC2 instance with the Ubuntu 16.04 operating system. SSH into the EC2 instance to install the following software and mount the EFS file system:
 
 ~~~~
 $ sudo apt-get update
@@ -124,10 +120,9 @@ $ sudo mount /efs
 
 **STEP 2 - Install the Apache and PHP**
 
-Run the following commands to install Apache and PHP.
+Run the following commands to install Apache and PHP. Notice that we are not installing the MySQL server this time. 
 
 ~~~~
-$ sudo apt-get update
 $ sudo apt-get install apache2 php mysql-client libapache2-mod-php php-mcrypt php-mysql php-curl php-xml php-memcached
 $ sudo service apache2 restart
 ~~~~
@@ -135,19 +130,17 @@ $ sudo service apache2 restart
 Then we use the EFS file system to store our web application.
 
 ~~~~
-$ cd /var
-$ sudo chown -R ubuntu:ubuntu www
-$ mv www /efs
-$ sudo ln -s /efs/www www
-$ cd /var/www/html
+$ cd /efs
 $ git clone https://github.com/qyjohn/web-demo
 $ cd web-demo
 $ sudo chown -R www-data:www-data uploads
+$ cd /var/www/html
+$ sudo ln -s /efs/web-demo web-demo
 ~~~~
 
 **STEP 3 - Launch an RDS Instance**
 
-Launch an RDS instance running MySQL. When launching the RDS instance, create a default database named “web_demo”. When the RDS instance becomes available, connect to the RDS DB server as Root and create a user as you did before for the local DB. This time, when creating the user and granting privileges, you should not use 'username'@'localhost', because the DB will be accessed from web servers but not localhost. You can use 'username'@'%' to create a user that is trusted from any source. Then, use the following command to import the demo data in web_demo.sql to the web_demo database on the RDS database:
+Launch an RDS instance running MySQL. When launching the RDS instance, create a default database named “web_demo”. When the RDS instance becomes available. Please make sure that the security group being used on the RDS instance allows inbound connection from your EC2 instance. Then, use the following command to import the demo data in web_demo.sql to the web_demo database on the RDS database:
 
 ~~~~
 $ cd /var/www/html/web-demo
@@ -158,7 +151,9 @@ Now, modify config.php with the new database server hostname, username, password
 
 **STEP 4 - Create an ElastiCache Memcached Instance**
 
-We user ElastiCache to resolve the issue about session sharing between multiple web servers. In the ElastiCache console, launch an ElasticCache with Memcache and obtain the endpoint information. On both web servers, install php-memcached and configure php.ini to use memcached for session sharing.
+We user ElastiCache to resolve the issue about session sharing between multiple web servers. In the ElastiCache console, launch an ElastiCache with Memcache and obtain the endpoint information. Please make sure that the security group being used on the ElastiCache instance allows inbound connection from your EC2 instance. 
+
+On both web servers, configure php.ini to use memcached for session sharing.
 
 Edit /etc/php/7.0/apache2/php.ini. Make the following modifications:
 
@@ -179,7 +174,7 @@ Now, create an AMI from the EC2 instance and launch a new EC2 instance with the 
 
 **STEP 6 - Create an ELB**
 
-Create an ELB and add the two web servers to the ELB. Since we do have Apache running on both web servers, you might want to use HTTP as the ping protocol with 80 as the ping port and “/” as the ping path for the health check parameter for your ELB.
+Create an Application Load Balancer (ALB) and register the two EC2 instances to the ALB target group. Since we do have Apache running on both web servers, you might want to use HTTP as the ping protocol with 80 as the ping port and “/” as the ping path for the health check parameter for your ELB.
 
 **STEP 7 - Testing*
 
