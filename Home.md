@@ -140,7 +140,17 @@ $ sudo ln -s /efs/web-demo web-demo
 
 **STEP 3 - Launch an RDS Instance**
 
-Launch an RDS instance running MySQL. When launching the RDS instance, create a default database named “web_demo”. When the RDS instance becomes available. Please make sure that the security group being used on the RDS instance allows inbound connection from your EC2 instance. Then, use the following command to import the demo data in web_demo.sql to the web_demo database on the RDS database:
+Launch an RDS instance running MySQL. When launching the RDS instance, create a default database named “web_demo”. When the RDS instance becomes available. Please make sure that the security group being used on the RDS instance allows inbound connection from your EC2 instance. Then, connect to the RDS instance and create a user for your application. This time, when granting privileges, you need to grant external access for the user.
+
+~~~~
+$ mysql -h [endpoint-of-rds-instance] -u root -p
+mysql> CREATE DATABASE web_demo;
+mysql> CREATE USER 'username'@'%' IDENTIFIED BY 'password';
+mysql> GRANT ALL PRIVILEGES ON web_demo.* TO 'username'@'%';
+mysql> quit
+~~~~
+
+Then, use the following command to import the demo data in web_demo.sql to the web_demo database on the RDS database:
 
 ~~~~
 $ cd /var/www/html/web-demo
@@ -151,9 +161,9 @@ Now, modify config.php with the new database server hostname, username, password
 
 **STEP 4 - Create an ElastiCache Memcached Instance**
 
-We user ElastiCache to resolve the issue about session sharing between multiple web servers. In the ElastiCache console, launch an ElastiCache with Memcache and obtain the endpoint information. Please make sure that the security group being used on the ElastiCache instance allows inbound connection from your EC2 instance. 
+We use ElastiCache to resolve the issue about session sharing between multiple web servers. In the ElastiCache console, launch an ElastiCache with Memcache and obtain the endpoint information. Please make sure that the security group being used on the ElastiCache instance allows inbound connection from your EC2 instance. 
 
-On both web servers, configure php.ini to use memcached for session sharing.
+On both web server, configure php.ini to use memcached for session sharing.
 
 Edit /etc/php/7.0/apache2/php.ini. Make the following modifications:
 
@@ -162,7 +172,7 @@ session.save_handler = memcached
 session.save_path = "[endpoint-to-the-elasticache-instance]:11211"
 ~~~~
 
-Then you need to restart Apache on both web servers to make the new configuration effective.
+Then you need to restart Apache the web server to make the new configuration effective.
 
 ~~~~
 $ sudo service apache2 restart
