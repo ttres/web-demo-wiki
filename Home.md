@@ -106,7 +106,7 @@ $ sudo chown -R ubuntu:ubuntu /efs
 Then we add the mounting stuff into /etc/fstab to add the following line, so that you do not need to manually mount the EFS file system when the operating system is rebooted.
 
 ~~~~
-<dns-endpoint-of-your-efs-file-system>:/  /efs    nfs     rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2    0       0
+<dns-endpoint-of-your-efs-file-system>:/  /efs    nfs    auto,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2    0       0
 ~~~~
 
 You can verify the above-mentioned configuration is working using the following commands (run them several times):
