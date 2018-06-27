@@ -230,15 +230,15 @@ And, in index.php, there is a corresponding statement:
 sleep($latency);
 ~~~~
 
-That is, when a user request index.php, PHP will sleep for $latency seconds. As we know, as the workload increases, the CPU utilization (as well as other factors) increases, resulting in an increase in latency. By manually manipulating the $latency setting, we can simulate heavy workload to your web application, which is reflected in the average latency. 
+That is, when a user request index.php, PHP will sleep for $latency seconds. As we know, as the workload increases, the CPU utilization (as well as other factors) increases, resulting in an increase in latency (response time). By manually manipulating the $latency setting, we can simulate heavy workload to your web application, which is reflected in the average latency. 
 
-With AWS, you can use AutoScaling to scale your server fleet in a dynamic fashion, according to the wordload of the fleet. In this tutorial, we use average latency as a trigger for scaling actions. You can achieve this following these steps:
+With AWS, you can use AutoScaling to scale your server fleet in a dynamic fashion, according to the workload of the fleet. In this tutorial, we use average latency (response time) as a trigger for scaling actions. You can achieve this following these steps:
 
 (1) In your EC2 Console, create a launch configuration using the AMI and the IAM Role that we created in LEVEL 2.
 
 (2) Create an AutoScaling group using the launch configuration we created in step (1), make sure that the AutoScaling group receives traffic from your ALB target group. Also, change the health check type from EC2 to ELB. (This way, when the ELB determines that an instance is unhealthy, the AutoScaling group will terminate it.) You don’t need to specify any scaling policy at this point.
 
-(3) Click on your ELB and create a new CloudWatch Alarm (ELB -> Monitoring -> Create Alarm) when the average latency is greater than 1000 ms for at least 1 minutes.
+(3) Click on your ELB and create a new CloudWatch Alarm (ELB -> Monitoring -> Create Alarm) when the average latency (response time) is greater than 1000 ms for at least 1 minutes.
 
 (4) Click on your AutoScaling group, and create a new scaling policy (AutoScaling -> Scaling Policies), using the CloudWatch Alarm you just created. The auto scaling action can be “add 1 instance and then wait 300 seconds”. This way, if the average latency of your web application exceeds 1 second, AutoScaling will add one more instance to your fleet.
 
