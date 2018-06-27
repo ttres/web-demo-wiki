@@ -161,9 +161,9 @@ Now, modify config.php with the new database server hostname, username, password
 
 **STEP 4 - Create an ElastiCache Memcached Instance**
 
-We use ElastiCache to resolve the issue about session sharing between multiple web servers. In the ElastiCache console, launch an ElastiCache with Memcache and obtain the endpoint information. Please make sure that the security group being used on the ElastiCache instance allows inbound connection from your EC2 instance. 
+We use ElastiCache to resolve the session sharing issue between multiple web servers. In the ElastiCache console, launch an ElastiCache with Memcache (just 1 single node is enough) and obtain the endpoint information. Please make sure that the security group being used on the ElastiCache instance allows inbound connection from your EC2 instance. 
 
-On both web server, configure php.ini to use memcached for session sharing.
+On the web server, configure php.ini to use Memcached for session sharing.
 
 Edit /etc/php/7.0/apache2/php.ini. Make the following modifications:
 
