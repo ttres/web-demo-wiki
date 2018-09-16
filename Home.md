@@ -83,6 +83,8 @@ Use a text editor to open config.php, then change the username and password for 
 
 In your browser, browse to http://ip-address/web-demo/index.php. You should see that our application is now working. You can login with your name, then upload some photos for testing. (You might have noticed that this demo application does not ask you for a password. This is because we would like to make things as simple as possible. Handling user password is a very complicate issue, which is beyond the scope of this entry level tutorial.) Then I suggest that you spend 10 minutes reading through the demo code index.php. The demo code has reasonable documentation in the form of comments, so I am not going to explain the code here.
 
+Now you are able to get your website working, please upload some more pictures for testing. Upload some small pictures and some big pictures (like 20 MB) to see what happens. Fix any issues you may observe in the tests.
+
 **(3) LEVEL 1**
 
 ![LEVEL 1](http://www.qyjohn.net/wp-content/uploads/2017/02/Level_1.png)
@@ -231,6 +233,8 @@ In order for this new setting to work, we need to attach an IAM Role to both EC2
 In your browser, again browse to http://<dns-name-of-elb>/web-demo/index.php. At this point you will see missing images, because the previously uploaded images are not available on S3. Newly uploaded images will go to S3 instead of local disk. 
 
 The reason we use IAM Role in this tutorial is that with IAM Role you do not need to supply your AWS Access Key and Secret Key in your code. Rather, Your code will assume the role assigned to the EC2 instance, and access the AWS resources that your EC2 instance is allowed to access. Today many people and organizations host their source code on github.com or some other public repositories. By using IAM roles you no longer hard code your AWS credentials in your application, thus eliminating the possibility of leaking your AWS credentials to the public.
+
+
 
 **(4) LEVEL 3**
 
