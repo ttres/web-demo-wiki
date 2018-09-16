@@ -85,7 +85,7 @@ In your browser, browse to http://ip-address/web-demo/index.php. You should see 
 
 **(3) LEVEL 1**
 
-![LEVEL 1](https://s3-ap-southeast-2.amazonaws.com/hailongleon/Slide+Updated.png)
+![LEVEL 1](http://www.qyjohn.net/wp-content/uploads/2017/02/Level_1.png)
 
 In this level, we will expand the basic version we have in LEVEL 0 and deploy it to multiple servers. We will do this using two different approaches, the hard approach uses a self-managed NFS server, while the easy approach uses the managed EFS service. 
 
