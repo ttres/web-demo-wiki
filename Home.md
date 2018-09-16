@@ -159,9 +159,9 @@ $ mysql -h [endpoint-of-rds-instance] -u username -p web_demo < web_demo.sql
 
 Now, modify config.php with the new database server hostname, username, password, and database name.
 
-**STEP 4 - Create an ElastiCache Memcached Instance**
+**STEP 4 - Create an ElastiCache Memcached Cluster**
 
-We use ElastiCache to resolve the session sharing issue between multiple web servers. In the ElastiCache console, launch an ElastiCache with Memcache (just 1 single node is enough) and obtain the endpoint information. Please make sure that the security group being used on the ElastiCache instance allows inbound connection from your EC2 instance. 
+We use ElastiCache to resolve the session sharing issue between multiple web servers. In the ElastiCache console, launch an ElastiCache cluster with Memcached (just 1 single node is enough) and obtain the endpoint information. Please make sure that the security group being used on the ElastiCache cluster allows inbound connection from your EC2 instance. 
 
 On the web server, configure php.ini to use Memcached for session sharing.
 
@@ -169,12 +169,32 @@ Edit /etc/php/7.0/apache2/php.ini. Make the following modifications:
 
 ~~~~
 session.save_handler = memcached
-session.save_path = "[endpoint-to-the-elasticache-instance]:11211"
+session.save_path = "[dns-endpoint-to-the-elasticache-cluster]:11211"
 ~~~~
 
 Then you need to restart Apache the web server to make the new configuration effective.
 
 ~~~~
+$ sudo service apache2 restart
+~~~~
+
+**STEP 4b - (Optional) Create an ElastiCache Redis Cluster**
+
+If you don't want to use MemCached, you can Redis to resolve the session sharing issue between multiple web servers. In the ElastiCache console, launch an ElastiCache cluster with Redis (just 1 single node is enough) and obtain the endpoint information. Please make sure that the security group being used on the ElastiCache cluster allows inbound connection from your EC2 instance. 
+
+On the web server, configure php.ini to use Redis for session sharing.
+
+Edit /etc/php/7.0/apache2/php.ini. Make the following modifications:
+
+~~~~
+session.save_handler = redis
+session.save_path = "[dns-endpoint-to-the-elasticache-cluster]:6379"
+~~~~
+
+If you have not yet installed the php-redis module, you need to install it to make things work. Then you need to restart Apache the web server to make the new configuration effective.
+
+~~~~
+$ sudo apt-get install php-redis
 $ sudo service apache2 restart
 ~~~~
 
