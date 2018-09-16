@@ -189,8 +189,8 @@ On the web server, configure php.ini to use Redis for session sharing.
 Edit /etc/php/7.0/apache2/php.ini. Make the following modifications:
 
 ~~~~
-session.save_handler = redis
-session.save_path = "[dns-endpoint-to-the-elasticache-cluster]:6379"
+session.save_handler = rediscluster
+session.save_path = "seed[]=[dns-endpoint-to-the-elasticache-cluster]:6379"
 ~~~~
 
 If you have not yet installed the php-redis module, you need to install it to make things work. Then you need to restart Apache the web server to make the new configuration effective.
