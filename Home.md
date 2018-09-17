@@ -223,9 +223,10 @@ From one of the EC2 instance, edit config.php and make some minor changes. It do
 In the following configuration, $s3_bucket is the name of the S3 bucket for share storage, and $s3_baseurl is the URL pointing to the S3 endpoint in the region hosting your S3 bucket. You can find the S3 endpoint from http://docs.aws.amazon.com/general/latest/gr/rande.html. you can also identify this end point in the S3 Console by viewing the properties of an S3 object in the S3 bucket.
 
 ~~~~
-$storage_option = "s3";
-$s3_bucket  = "my_uploads_bucket";
-$s3_baseurl = "https://s3-ap-southeast-2.amazonaws.com/";
+$s3_region  = "us-east-2";
+$s3_bucket  = "your_s3_bucket_name";
+$s3_prefix  = "uploads";
+$s3_baseurl = "https://s3-us-east-2.amazonaws.com/";
 ~~~~
 
 In order for this new setting to work, we need to attach an IAM Role to both EC2 instances. In the IAM Console, create an EC2 Role in the IAM Console, which allows full access to S3 (IAM Console -> Role -> Create Role -> AWS Service -> EC2 -> EC2 -> Amazon S3 Full Access). In the EC2 Console, attach the newly created role to both EC2 instances one by one (Instance -> Actions -> Instance Settings -> Attach/Replace IAM Role).
@@ -233,8 +234,6 @@ In order for this new setting to work, we need to attach an IAM Role to both EC2
 In your browser, again browse to http://<dns-name-of-elb>/web-demo/index.php. At this point you will see missing images, because the previously uploaded images are not available on S3. Newly uploaded images will go to S3 instead of local disk. 
 
 The reason we use IAM Role in this tutorial is that with IAM Role you do not need to supply your AWS Access Key and Secret Key in your code. Rather, Your code will assume the role assigned to the EC2 instance, and access the AWS resources that your EC2 instance is allowed to access. Today many people and organizations host their source code on github.com or some other public repositories. By using IAM roles you no longer hard code your AWS credentials in your application, thus eliminating the possibility of leaking your AWS credentials to the public.
-
-
 
 **(4) LEVEL 3**
 
