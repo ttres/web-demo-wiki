@@ -342,9 +342,16 @@ Also pay attention to this code when doing image uploads. We deleted the cache a
 		}
 ~~~~
 
-**(6) Level 5**
+**(6) LEVEL 5**
 
 ![Web Demo](http://www.qyjohn.net/wp-content/uploads/2015/01/Level_5.png)
+
+In this level, we create a CloudFront distribution with your S3 bucket as the source. This way your static content is served to your end users from the nearest edge locations. In your code, you only need to make the following tiny changes.
+
+~~~~
+$enable_cf  = true;
+$cf_baseurl = "http://xxxxxxxxxxxxxx.cloudfront.net/";
+~~~~
 
 **(7) Others**
 
