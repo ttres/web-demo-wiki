@@ -125,7 +125,7 @@ $ sudo mount /efs
 Run the following commands to install Apache and PHP. Notice that we are not installing the MySQL server this time. 
 
 ~~~~
-$ sudo apt-get install apache2 php mysql-client libapache2-mod-php php-mcrypt php-mysql php-curl php-xml php-memcached
+$ sudo apt-get install apache2 php mysql-client libapache2-mod-php php-mcrypt php-mysql php-curl php-xml
 $ sudo service apache2 restart
 ~~~~
 
@@ -171,7 +171,21 @@ Edit /etc/php/7.0/apache2/php.ini. Make the following modifications:
 
 ~~~~
 session.save_handler = memcached
-session.save_path = "[dns-endpoint-to-the-elasticache-cluster]:11211"
+session.save_path = "[dns-endpoint-to-the-elasticache-node]:11211"
+~~~~
+
+Then you need to restart Apache the web server to make the new configuration effective.
+
+~~~~
+$ sudo apt-get install php-memcached
+$ sudo service apache2 restart
+~~~~
+
+If you create an ElastiCache Memcached cluster with multiple nodes, your configuration would look like this:
+
+~~~~
+session.save_handler = memcache
+session.save_path = "tcp://elasticache-node1:11211,tcp://elasticache-node2:11211,tcp://elasticache-node3:11211"
 ~~~~
 
 Edit /etc/php/7.0/mods-available/memcached.ini, add the following two lines to support session redundancy. Please note that the value of memcache.session_redundancy equals to the number of cache nodes plus 1 (because of a [bug](https://bugs.php.net/bug.php?id=58585) in PHP. 
@@ -184,6 +198,7 @@ memcache.session_redundancy=4
 Then you need to restart Apache the web server to make the new configuration effective.
 
 ~~~~
+$ sudo apt-get install php-memcache
 $ sudo service apache2 restart
 ~~~~
 
