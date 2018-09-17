@@ -174,6 +174,13 @@ session.save_handler = memcached
 session.save_path = "[dns-endpoint-to-the-elasticache-cluster]:11211"
 ~~~~
 
+Edit /etc/php/7.0/mods-available/memcached.ini, add the following two lines to support session redundancy. Please note that the value of memcache.session_redundancy equals to the number of cache nodes plus 1 (because of a [bug](https://bugs.php.net/bug.php?id=58585) in PHP. 
+
+~~~~
+memcache.allow_failover=1
+memcache.session_redundancy=4
+~~~~
+
 Then you need to restart Apache the web server to make the new configuration effective.
 
 ~~~~
