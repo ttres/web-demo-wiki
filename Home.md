@@ -342,6 +342,10 @@ Also pay attention to this code when doing image uploads. We deleted the cache a
 		}
 ~~~~
 
+**(6) Level 5**
+
+![Web Demo](http://www.qyjohn.net/wp-content/uploads/2015/01/Level_5.png)
+
 **(7) Others**
 
 In this tutorial, we build a scalable web application using various AWS services including EC2, RDS, S3, ELB, CloudWatch, AutoScaling, IAM, and ElastiCache. It demonstrates how easy it is to build a scalable web application that can scale reasonably well using the various AWS building blocks. It should be noted that the code being used in this tutorial is for demo only, and can not be used in a production system.
