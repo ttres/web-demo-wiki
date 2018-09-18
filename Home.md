@@ -392,12 +392,12 @@ $ cd amazon-kinesis-agent
 $ sudo ./setup --install
 ~~~~
 
-After the agent is installed, the configuration file can be found in /etc/aws-kinesis/agent.json. Edit the configuration file to send your Apache access log to the web-access-log stream, and error log to the web-error-log stream. 
+After the agent is installed, the configuration file can be found in /etc/aws-kinesis/agent.json. Edit the configuration file to send your Apache access log to the web-access-log stream, and error log to the web-error-log stream. It should look very similar to the following sample configuration.
 
 ~~~~
 {
   "cloudwatch.emitMetrics": true,
-  "kinesis.endpoint": "",
+  "kinesis.endpoint": "kinesis.us-east-2.amazonaws.com",
   "firehose.endpoint": "",
   
   "flows": [
