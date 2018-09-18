@@ -367,14 +367,78 @@ Also pay attention to this code when doing image uploads. We deleted the cache a
 
 ![Web Demo](http://www.qyjohn.net/wp-content/uploads/2015/01/Level_5.png)
 
-In this level, we create a CloudFront distribution with your S3 bucket as the source. This way your static content is served to your end users from the nearest edge locations. In your code, you only need to make the following tiny changes.
+In this level, we create a CloudFront distribution with your S3 bucket as the origin. This way your static content is served to your end users from the nearest edge locations. In your code, you only need to make the following tiny changes.
 
 ~~~~
 $enable_cf  = true;
 $cf_baseurl = "http://xxxxxxxxxxxxxx.cloudfront.net/";
 ~~~~
 
-**(7) Others**
+Reload the web page in your browser to observe the behavior. Are you able to use CloudFront when the uploaded pictures are stored on disk?
+
+**(7) LEVEL 6**
+
+In this level, we will look into how we can perform real-time log analysis for your web application. This is achieve using the Kinesis data stream and Kinesis Analytics application. 
+
+First of all, we need to create two Kinesis data streams (using the Kinesis web console): web-access-log (with 2 shards) and web-error-log (with 2 shards).
+
+SSH into your EC2 instance, install and configure the Kinesis Agent:
+
+~~~~
+$ cd ~
+$ sudo apt-get install openjdk-8-jdk
+$ git clone https://github.com/awslabs/amazon-kinesis-agent
+$ cd amazon-kinesis-agent
+$ sudo ./setup --install
+~~~~
+
+After the agent is installed, the configuration file can be found in /etc/aws-kinesis/agent.json. Edit the configuration file to send your Apache access log to the web-access-log stream, and error log to the web-error-log stream. 
+
+~~~~
+{
+  "cloudwatch.emitMetrics": true,
+  "kinesis.endpoint": "",
+  "firehose.endpoint": "",
+  
+  "flows": [
+    {
+      "filePattern": "/var/log/apache2/access.log",
+      "kinesisStream": "web-access-log",
+      "partitionKeyOption": "RANDOM"
+    },
+    {
+      "filePattern": "/var/log/apache2/error.log",
+      "kinesisStream": "web-error-log",
+      "partitionKeyOption": "RANDOM"
+    }
+  ]
+}
+~~~~
+
+Once you updated the configuration file, you can start the Kinesis Agent using the following command:
+
+~~~~
+$ sudo service aws-kinesis-agent stop
+$ sudo service aws-kinesis-agent start
+~~~~
+
+Then you can check the status of the Kinesis Agent using the following command:
+
+~~~~
+$ sudo service aws-kinesis-agent start
+~~~~
+
+If the agent is not working as expected, look into the logs (under /var/log/aws-kinesis-agent) to understand what is going on. It is likely that the user running the Kinesis Agent (aws-kinesis-agent-user) does not have access to the Apache logs (/var/log/apache2/). To resolve this issue, you can add the aws-kinesis-agent-user to the adm group.
+
+~~~~
+$ sudo usermod -a -G adm aws-kinesis-agent-user 
+$ sudo service aws-kinesis-agent stop
+$ sudo service aws-kinesis-agent start
+~~~~
+
+Refresh your web application in the browser, then watch the Kinesis Agent logs to see whether your logs are pushed to the Kinesis streams. When the Kinesis Agent says the logs are successfully sent to destinations, check the "Monitoring" tab in the Kinesis data streams console to confirm this.
+
+**(8) Others**
 
 In this tutorial, we build a scalable web application using various AWS services including EC2, RDS, S3, ELB, CloudWatch, AutoScaling, IAM, and ElastiCache. It demonstrates how easy it is to build a scalable web application that can scale reasonably well using the various AWS building blocks. It should be noted that the code being used in this tutorial is for demo only, and can not be used in a production system.
 
