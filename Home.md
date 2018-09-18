@@ -438,6 +438,9 @@ $ sudo service aws-kinesis-agent start
 
 Refresh your web application in the browser, then watch the Kinesis Agent logs to see whether your logs are pushed to the Kinesis streams. When the Kinesis Agent says the logs are successfully sent to destinations, check the "Monitoring" tab in the Kinesis data streams console to confirm this.
 
+Now go to the Kinesis Analytics console to create a Kinesis Analytics Application, with the web-access-log data stream as the source. Click on the "Discover scheme" to automatically discover the scheme in the data. In the SQL Editor, click on "Add SQL from Templates" and select "Parse and aggregate Apache logs" and then "Add this SQL to the Editor". Start the application to observe its behavior - during this period, refresh your web browser (your own web application) from time to time.
+
+
 **(8) Others**
 
 In this tutorial, we build a scalable web application using various AWS services including EC2, RDS, S3, ELB, CloudWatch, AutoScaling, IAM, and ElastiCache. It demonstrates how easy it is to build a scalable web application that can scale reasonably well using the various AWS building blocks. It should be noted that the code being used in this tutorial is for demo only, and can not be used in a production system.
