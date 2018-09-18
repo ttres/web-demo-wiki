@@ -397,7 +397,7 @@ After the agent is installed, the configuration file can be found in /etc/aws-ki
 ~~~~
 {
   "cloudwatch.emitMetrics": true,
-  "kinesis.endpoint": "kinesis.us-east-2.amazonaws.com",
+  "kinesis.endpoint": "kinesis.us-east-1.amazonaws.com",
   "firehose.endpoint": "",
   
   "flows": [
