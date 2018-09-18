@@ -380,7 +380,7 @@ Reload the web page in your browser to observe the behavior. Are you able to use
 
 In this level, we will look into how we can perform real-time log analysis for your web application. This is achieve using the Kinesis data stream and Kinesis Analytics application. 
 
-First of all, we need to create two Kinesis data streams (using the Kinesis web console): web-access-log (with 2 shards) and web-error-log (with 2 shards).
+First of all, we need to create two Kinesis data streams (using the Kinesis web console) in the us-east-1 region: web-access-log (with 2 shards) and web-error-log (with 2 shards).
 
 SSH into your EC2 instance, install and configure the Kinesis Agent:
 
