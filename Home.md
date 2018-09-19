@@ -499,4 +499,4 @@ You are encouraged to explore the following topics:
 
 (4) How to make this demo application more secure?
 
-(5) Any other topic that you would like to explore.
+(5) Use Kinesis Firehose to delivery your logs to S3, Elastic Search, or Splunk for further analysis, search, etc.
