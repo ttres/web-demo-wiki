@@ -380,7 +380,7 @@ Reload the web page in your browser to observe the behavior. Are you able to use
 
 In this level, we will look into how we can perform real-time log analysis for your web application. This is achieve using the Kinesis data stream and Kinesis Analytics application. 
 
-First of all, we need to create two Kinesis data streams (using the Kinesis web console) in the us-east-1 region: web-access-log (with 2 shards) and web-error-log (with 2 shards).
+First of all, we need to create two Kinesis data streams (using the Kinesis web console) in the us-east-1 region: web-access-log (1 shard is sufficient for our demo).
 
 SSH into your EC2 instance, configure your Apache to log in JSON format. This will make it easier for Kinesis Analytics to work with your logs. Edit /etc/apache2/apache2.conf, find the area with LogFormat, and add the following new log format to it:
 
@@ -410,7 +410,7 @@ $ cd amazon-kinesis-agent
 $ sudo ./setup --install
 ~~~~
 
-After the agent is installed, the configuration file can be found in /etc/aws-kinesis/agent.json. Edit the configuration file to send your Apache access log to the web-access-log stream, and error log to the web-error-log stream. It should look very similar to the following sample configuration.
+After the agent is installed, the configuration file can be found in /etc/aws-kinesis/agent.json. Edit the configuration file to send your Apache access log to the web-access-log stream. (Let's not worry about the error log in this tutorial.)
 
 ~~~~
 {
@@ -422,11 +422,6 @@ After the agent is installed, the configuration file can be found in /etc/aws-ki
     {
       "filePattern": "/var/log/apache2/access.log",
       "kinesisStream": "web-access-log",
-      "partitionKeyOption": "RANDOM"
-    },
-    {
-      "filePattern": "/var/log/apache2/error.log",
-      "kinesisStream": "web-error-log",
       "partitionKeyOption": "RANDOM"
     }
   ]
@@ -462,7 +457,7 @@ If you are tired of manually refreshing your web browser, you can use the Apache
 $ ab -n 100000 -c 2 http://<dns-endpoint-of-your-load-balancer>/web-demo/index.php
 ~~~~
 
-Now go to the Kinesis Analytics console to create a Kinesis Analytics Application, with the web-access-log data stream as the source. Click on the "Discover scheme" to automatically discover the scheme in the data. In the SQL Editor, copy and paste the following sample SQL statements. Then click on the "Save and run SQL" button to start your application.
+Now go to the Kinesis Analytics console to create a Kinesis Analytics Application, with the web-access-log data stream as the source. Click on the "Discover scheme" to automatically discover the scheme in the data, then save the scheme and continue. In the SQL Editor, copy and paste the following sample SQL statements. Then click on the "Save and run SQL" button to start your application.
 
 ~~~~
 -- Create a destination stream
