@@ -393,7 +393,7 @@ LogFormat "{ \"request_time\":\"%t\", \"client_ip\":\"%a\", \"client_hostname\":
 Then edit /etc/apach2/sites-available/000-default.conf, change the CustomLog line to use your own log format:
 
 ~~~~
-	CustomLog ${APACHE_LOG_DIR}/access.log kinesis
+CustomLog ${APACHE_LOG_DIR}/access.log kinesis
 ~~~~
 
 Restart Apache to allow the new configuration to take effect:
