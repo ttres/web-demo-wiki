@@ -453,6 +453,8 @@ $ sudo service aws-kinesis-agent start
 
 Refresh your web application in the browser, then watch the Kinesis Agent logs to see whether your logs are pushed to the Kinesis streams. When the Kinesis Agent says the logs are successfully sent to destinations, check the "Monitoring" tab in the Kinesis data streams console to confirm this.
 
+Create a new AMI from the above-mentioned EC2 instance, then create a new launch configuration from the new AMI. Modify your Auto Scaling group to use the new launch configuration. This way, all of the EC2 instance in your web server fleet is capable of sending logs to your Kinesis stream.
+
 If you are tired of manually refreshing your web browser, you can use the Apache Benchmark tool (ab) to generate the web traffic automatically.
 
 ~~~~
