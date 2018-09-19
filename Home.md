@@ -384,7 +384,7 @@ In this level, we will look into how we can perform real-time log analysis for y
 
 First of all, we need to create two Kinesis data streams (using the Kinesis web console) in the us-east-1 region: web-access-log (1 shard is sufficient for our demo).
 
-SSH into your EC2 instance, configure your Apache to log in JSON format. This will make it easier for Kinesis Analytics to work with your logs. Edit /etc/apache2/apache2.conf, find the area with LogFormat, and add the following new log format to it:
+SSH into your EC2 instance, configure your Apache to log in JSON format. This will make it easier for Kinesis Analytics to work with your logs. Edit /etc/apache2/apache2.conf, find the area with LogFormat, and add the following new log format to it. For more information on custom log format for Apache, please refer to [Apache Module mod_log_config](http://httpd.apache.org/docs/current/mod/mod_log_config.html).
 
 ~~~~
 LogFormat "{ \"request_time\":\"%t\", \"client_ip\":\"%a\", \"client_hostname\":\"%V\", \"server_ip\":\"%A\", \"request\":\"%U\", \"http_method\":\"%m\", \"status\":\"%>s\", \"size\":\"%B\", \"userAgent\":\"%{User-agent}i\", \"referer\":\"%{Referer}i\" }" kinesis
