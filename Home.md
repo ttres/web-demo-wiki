@@ -378,6 +378,8 @@ Reload the web page in your browser to observe the behavior. Are you able to use
 
 **(7) LEVEL 6**
 
+![Web Demo](http://www.qyjohn.net/wp-content/uploads/2015/01/Level_6.png)
+
 In this level, we will look into how we can perform real-time log analysis for your web application. This is achieve using the Kinesis data stream and Kinesis Analytics application. 
 
 First of all, we need to create two Kinesis data streams (using the Kinesis web console) in the us-east-1 region: web-access-log (1 shard is sufficient for our demo).
