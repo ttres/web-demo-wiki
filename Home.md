@@ -476,8 +476,7 @@ CREATE OR REPLACE PUMP "STREAM_PUMP" AS INSERT INTO "DESTINATION_SQL_STREAM"
 SELECT STREAM "client_ip", COUNT(*) AS request_count
 FROM "SOURCE_SQL_STREAM_001"
 -- Uses a 10-second tumbling time window
-GROUP BY "client_ip", FLOOR(("SOURCE_SQL_STREAM_001".ROWTIME - TIMESTAMP '1970-01-01 00:00:00') SECOND / 10 TO SECOND)
-ORDER BY count DESC LIMIT 5;
+GROUP BY "client_ip", FLOOR(("SOURCE_SQL_STREAM_001".ROWTIME - TIMESTAMP '1970-01-01 00:00:00') SECOND / 10 TO SECOND);
 ~~~~
 
 From multiple EC2 instances, use the Apache Benchmark tool (ab) to generate some more web traffic. Observe and explain the query results in the Kinesis Analytics console.
