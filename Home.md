@@ -382,7 +382,25 @@ In this level, we will look into how we can perform real-time log analysis for y
 
 First of all, we need to create two Kinesis data streams (using the Kinesis web console) in the us-east-1 region: web-access-log (with 2 shards) and web-error-log (with 2 shards).
 
-SSH into your EC2 instance, install and configure the Kinesis Agent:
+SSH into your EC2 instance, configure your Apache to log in JSON format. This will make it easier for Kinesis Analytics to work with your logs. Edit /etc/apache2/apache2.conf, find the area with LogFormat, and add the following new log format to it:
+
+~~~~
+LogFormat "{ \"request_time\":\"%t\", \"client_ip\":\"%a\", \"client_hostname\":\"%V\", \"server_ip\":\"%A\", \"request\":\"%U\", \"http_method\":\"%m\", \"status\":\"%>s\", \"size\":\"%B\", \"userAgent\":\"%{User-agent}i\", \"referer\":\"%{Referer}i\" }" kinesis
+~~~~
+
+Then edit /etc/apach2/sites-available/000-default.conf, change the CustomLog line to use your own log format:
+
+~~~~
+	CustomLog ${APACHE_LOG_DIR}/access.log kinesis
+~~~~
+
+Restart Apache to allow the new configuration to take effect:
+
+~~~~
+$ sudo service apache2 restart
+~~~~
+
+Then, install and configure the Kinesis Agent:
 
 ~~~~
 $ cd ~
@@ -438,8 +456,31 @@ $ sudo service aws-kinesis-agent start
 
 Refresh your web application in the browser, then watch the Kinesis Agent logs to see whether your logs are pushed to the Kinesis streams. When the Kinesis Agent says the logs are successfully sent to destinations, check the "Monitoring" tab in the Kinesis data streams console to confirm this.
 
-Now go to the Kinesis Analytics console to create a Kinesis Analytics Application, with the web-access-log data stream as the source. Click on the "Discover scheme" to automatically discover the scheme in the data. In the SQL Editor, click on "Add SQL from Templates" and select "Parse and aggregate Apache logs" and then "Add this SQL to the Editor". Start the application to observe its behavior - during this period, refresh your web browser (your own web application) from time to time.
+If you are tired of manually refreshing your web browser, you can use the Apache Benchmark tool (ab) to generate the web traffic automatically.
 
+~~~~
+$ ab -n 100000 -c 2 http://<dns-endpoint-of-your-load-balancer>/web-demo/index.php
+~~~~
+
+Now go to the Kinesis Analytics console to create a Kinesis Analytics Application, with the web-access-log data stream as the source. Click on the "Discover scheme" to automatically discover the scheme in the data. In the SQL Editor, copy and paste the following sample SQL statements. Then click on the "Save and run SQL" button to start your application.
+
+~~~~
+-- Create a destination stream
+CREATE OR REPLACE STREAM "DESTINATION_SQL_STREAM" (client_ip VARCHAR(16), request_count INTEGER);
+-- Create a pump which continuously selects from a source stream (SOURCE_SQL_STREAM_001)
+CREATE OR REPLACE PUMP "STREAM_PUMP" AS INSERT INTO "DESTINATION_SQL_STREAM"
+-- Aggregation functions COUNT|AVG|MAX|MIN|SUM|STDDEV_POP|STDDEV_SAMP|VAR_POP|VAR_SAMP
+SELECT STREAM "client_ip", COUNT(*) AS request_count
+FROM "SOURCE_SQL_STREAM_001"
+-- Uses a 10-second tumbling time window
+GROUP BY "client_ip", FLOOR(("SOURCE_SQL_STREAM_001".ROWTIME - TIMESTAMP '1970-01-01 00:00:00') SECOND / 10 TO SECOND);
+~~~~
+
+From multiple EC2 instances, use the Apache Benchmark tool (ab) to generate some more web traffic. Observe and explain the query results in the Kinesis Analytics console.
+
+~~~~
+$ ab -n 100000 -c 2 http://<dns-endpoint-of-your-load-balancer>/web-demo/index.php
+~~~~
 
 **(8) Others**
 
