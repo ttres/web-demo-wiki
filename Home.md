@@ -20,7 +20,7 @@ In this tutorial, we will accomplish this goal through the following five levels
 
 (1) Based on the basic version we developed in level (0), scale the application to two or more servers.
 
-(2) Use S3 to provide a shared storage for user uploads.
+(2) Off load user uploads to S3.
 
 (3) Dynamically scale the size of your server fleet according to the actual traffic to your web application.
 
