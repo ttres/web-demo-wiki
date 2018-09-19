@@ -26,6 +26,10 @@ In this tutorial, we will accomplish this goal through the following five levels
 
 (4) Implement a cache layer between the web server and the database server.
 
+(5) Use CloudFront for content delivery.
+
+(6) Use Kinesis Analytics to perform simple near realtime analysis for your web traffic. 
+
 **(2) LEVEL 0**
 
 ![LEVEL 0](http://www.qyjohn.net/wp-content/uploads/2017/03/Slide3.png)
