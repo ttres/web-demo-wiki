@@ -248,6 +248,8 @@ From one of the EC2 instance, edit config.php and make some minor changes. It do
 
 In the following configuration, $s3_bucket is the name of the S3 bucket for share storage, and $s3_baseurl is the URL pointing to the S3 endpoint in the region hosting your S3 bucket. You can find the S3 endpoint from http://docs.aws.amazon.com/general/latest/gr/rande.html. you can also identify this end point in the S3 Console by viewing the properties of an S3 object in the S3 bucket.
 
+It is very important that your S3 bucket does not "Block new public ACLs and uploading public objects". You can view the configurations of your S3 bucket in the S3 console under "Permissions -> Public Access Settings".
+
 ~~~~
 $s3_region  = "us-east-2";
 $s3_bucket  = "your_s3_bucket_name";
