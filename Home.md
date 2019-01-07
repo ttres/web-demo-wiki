@@ -449,7 +449,7 @@ Then you can check the status of the Kinesis Agent using the following command:
 $ sudo service aws-kinesis-agent status
 ~~~~
 
-If the agent is not working as expected, look into the logs (under /var/log/aws-kinesis-agent) to understand what is going on. It is likely that the user running the Kinesis Agent (aws-kinesis-agent-user) does not have access to the Apache logs (/var/log/apache2/). To resolve this issue, you can add the aws-kinesis-agent-user to the adm group.
+If the agent is not working as expected, look into the logs (under /var/log/aws-kinesis-agent) to understand what is going on. (If there is no log, what would you do?) It is likely that the user running the Kinesis Agent (aws-kinesis-agent-user) does not have access to the Apache logs (/var/log/apache2/). To resolve this issue, you can add the aws-kinesis-agent-user to the adm group.
 
 ~~~~
 $ sudo usermod -a -G adm aws-kinesis-agent-user 
