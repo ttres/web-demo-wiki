@@ -396,7 +396,7 @@ SSH into your EC2 instance, configure your Apache to log in JSON format. This wi
 LogFormat "{ \"request_time\":\"%t\", \"client_ip\":\"%a\", \"client_hostname\":\"%V\", \"server_ip\":\"%A\", \"request\":\"%U\", \"http_method\":\"%m\", \"status\":\"%>s\", \"size\":\"%B\", \"userAgent\":\"%{User-agent}i\", \"referer\":\"%{Referer}i\" }" kinesis
 ~~~~
 
-Then edit /etc/apach2/sites-available/000-default.conf, change the CustomLog line to use your own log format:
+Then edit /etc/apache2/sites-available/000-default.conf, change the CustomLog line to use your own log format:
 
 ~~~~
 CustomLog ${APACHE_LOG_DIR}/access.log kinesis
