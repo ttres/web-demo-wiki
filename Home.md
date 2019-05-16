@@ -38,14 +38,18 @@ In this level, we will build a basic version with all the components deployed on
 
 Login to your AWS Console and navigate to the EC2 Console. Launch an EC2 instance with an Ubuntu 18.04 AMI. Make sure that you allocate a public IP to your EC2 instance. In your security group settings, open port 80 for HTTP and port 22 for SSH access. After the instance becomes “running” and passes health checks, SSH into your EC2 instance to setup software dependencies and download the demo code from Github to the default web server folder:
 
+First of all we install the MySQL database server:
+
 ~~~~
 $ sudo apt-get update
-$ sudo apt-get install git mysql-server
+$ sudo apt-get install mysql-server
 $ sudo mysql_secure_installation
 ~~~~
 
+Then we install Apache and PHP:
+
 ~~~~
-$ sudo apt-get install apache2 php libapache2-mod-php php-mcrypt php-mysql php-curl php-xml php-memcached
+$ sudo apt-get install apache2 php libapache2-mod-php php-mysql php-curl php-xml php-memcached
 ~~~~
 
 You might need to restart your Apache web server:
@@ -57,6 +61,7 @@ $ sudo service apache2 restart
 Then we clone the git repository:
 
 ~~~~
+$ sudo apt-get install git
 $ cd /var
 $ sudo chown -R ubuntu:ubuntu www
 $ cd /var/www/html
