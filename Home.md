@@ -36,11 +36,15 @@ In this tutorial, we will accomplish this goal through the following five levels
 
 In this level, we will build a basic version with all the components deployed on one single server. The web application is developed with PHP, using Apache as the web serer, with MySQL as the database to store user upload information. You do not need to write any code, because I have a set of demo code prepared for you. You just need to launch an EC2 instance, carry out some basic configurations, then deploy the demo code.
 
-Login to your AWS Console and navigate to the EC2 Console. Launch an EC2 instance with an Ubuntu 16.04 AMI. Make sure that you allocate a public IP to your EC2 instance. In your security group settings, open port 80 for HTTP and port 22 for SSH access. After the instance becomes “running” and passes health checks, SSH into your EC2 instance to setup software dependencies and download the demo code from Github to the default web server folder:
+Login to your AWS Console and navigate to the EC2 Console. Launch an EC2 instance with an Ubuntu 18.04 AMI. Make sure that you allocate a public IP to your EC2 instance. In your security group settings, open port 80 for HTTP and port 22 for SSH access. After the instance becomes “running” and passes health checks, SSH into your EC2 instance to setup software dependencies and download the demo code from Github to the default web server folder:
 
 ~~~~
 $ sudo apt-get update
 $ sudo apt-get install git mysql-server
+$ sudo mysql_secure_installation
+~~~~
+
+~~~~
 $ sudo apt-get install apache2 php libapache2-mod-php php-mcrypt php-mysql php-curl php-xml php-memcached
 ~~~~
 
@@ -69,7 +73,7 @@ $ sudo chown -R www-data:www-data uploads
 Then we create a MySQL database and a MySQL user for our demo. Here we use “web_demo” as the database name, and “username” as the MySQL user.
 
 ~~~~
-$ mysql -u root -p
+$ sudo mysql
 mysql> CREATE DATABASE web_demo;
 mysql> CREATE USER 'username'@'localhost' IDENTIFIED BY 'password';
 mysql> GRANT ALL PRIVILEGES ON web_demo.* TO 'username'@'localhost';
@@ -99,7 +103,7 @@ In this level, we will expand the basic version we have in LEVEL 0 and deploy it
 
 Go to the EFS Console and create an EFS file system. 
 
-Terminate the previous EC2 instance because we no longer need it. Launch a new EC2 instance with the Ubuntu 16.04 operating system. SSH into the EC2 instance to install the following software and mount the EFS file system:
+Terminate the previous EC2 instance because we no longer need it. Launch a new EC2 instance with the Ubuntu 18.04 operating system. SSH into the EC2 instance to install the following software and mount the EFS file system:
 
 ~~~~
 $ sudo apt-get update
