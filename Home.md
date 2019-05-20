@@ -138,7 +138,7 @@ $ sudo mount /efs
 Run the following commands to install Apache and PHP. Notice that we are not installing the MySQL server this time. 
 
 ~~~~
-$ sudo apt-get install apache2 php mysql-client libapache2-mod-php php-mcrypt php-mysql php-curl php-xml
+$ sudo apt-get install apache2 php mysql-client libapache2-mod-php php-mysql php-curl php-xml
 $ sudo service apache2 restart
 ~~~~
 
