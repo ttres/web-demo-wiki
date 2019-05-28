@@ -331,6 +331,31 @@ else if ($enable_cache && ($cache_type == "redis"))
 }
 ~~~~
 
+The cache servers are defined in config.php, as below. Make sure that you modify the following code to use your own cache servers.
+
+~~~~
+function open_memcache_connection()
+{	
+	// Open a connection to the memcache server
+	$mem = new Memcached();
+	$mem->addServer('web-demo.xxxxxx.0001.use2.cache.amazonaws.com', 11211);	// node 1
+	$mem->addServer('web-demo.xxxxxx.0002.use2.cache.amazonaws.com', 11211);	// node 2
+	$mem->addServer('web-demo.xxxxxx.0003.use2.cache.amazonaws.com', 11211);	// node 3
+	return $mem;
+}
+function open_redis_connection()
+{
+	$parameters = [
+    'tcp://web-demo.xxxxxx.clustercfg.use2.cache.amazonaws.com:6379'    // configuration endpoint
+	];
+	$options = [
+    	'cluster' => 'redis'
+	];
+	$redis = new Predis\Client($parameters, $options);
+	return $redis;
+}
+~~~~
+
 Refresh the demo application in your browser, you will see that the “Fetching N records from the database.” message is now gone, indicating that the information you are seeing is obtained from ElastiCache. When you upload a new image, you will see this message again, indicating the cache is being updated.
 
 The following code is responsible of handling this cache logic:
