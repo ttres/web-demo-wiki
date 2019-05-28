@@ -343,6 +343,7 @@ function open_memcache_connection()
 	$mem->addServer('web-demo.xxxxxx.0003.use2.cache.amazonaws.com', 11211);	// node 3
 	return $mem;
 }
+
 function open_redis_connection()
 {
 	$parameters = [
