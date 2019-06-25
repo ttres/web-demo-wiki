@@ -229,11 +229,27 @@ Then you need to restart Apache the web server to make the new configuration eff
 $ sudo service apache2 restart
 ~~~~
 
-It should be noted that in PHP 7.0 **memcached.sess_prefix** is set to **memc.sess.key.**, while in PHP 7.2 **memcached.sess_prefix** is set to **memc.sess.**. The above-mentioned procedure worked out of the box with PHP 7.0. However, with PHP 7.2 you will need to add the following line in your index.php before session_start():
+It should be noted that starting from PHP 7.1 the session handler in php-memcache return false or null if the session doesn't exists. This is a bug in the php-memcache module and needs to be fixed in the upstream. However, you can create a class which extended SessionHandler to solve the problem in index.php.
+
+Add the following code to index.php before calling session_start():
 
 ~~~~
-ini_set('memcached.sess_prefix', 'memc.sess.');
+class MyMemcachedSessionHandler extends SessionHandler {
+    public function read($id)
+    {
+        $data = parent::read($id);
+        if(empty($data)) {
+            return '';
+        } else {
+            return $data;
+        }
+    } 
+}
+$myMemcachedSessionHandler = new MyMemcachedSessionHandler();
+session_set_save_handler($myMemcachedSessionHandler);
 ~~~~
+
+This solution was tested on Ubuntu 18.04 with PHP 7.2.
 
 **STEP 4b - (Optional) Create an ElastiCache Redis Cluster**
 
