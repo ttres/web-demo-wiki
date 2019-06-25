@@ -197,7 +197,7 @@ Then you need to restart Apache the web server to make the new configuration eff
 $ sudo service apache2 restart
 ~~~~
 
-**In the old time (with PHP 6.x), you can also use the php-memcache module to handle sessions. However, this seemed to stop working recently. I will update the following session when I get it back to work.**
+**In the old time (with PHP 7.0 on Ubuntu 16.04), you can also use the php-memcache module to handle sessions. However, this seemed to stop working recently. I will update the following session when I get it back to work.**
 
 On the web server, install the php-memcache module:
 
