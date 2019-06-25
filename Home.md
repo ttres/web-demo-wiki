@@ -184,7 +184,7 @@ On the web server, install the php-memcached module:
 $ sudo apt-get install php-memcached
 ~~~~
 
-Edit /etc/php/7.0/apache2/php.ini to use memcached as the session handler. You need to make the following modifications:
+Edit /etc/php/7.0/apache2/php.ini to use "memcached" as the session handler. You need to make the following modifications:
 
 ~~~~
 session.save_handler = memcached
@@ -199,7 +199,13 @@ $ sudo service apache2 restart
 
 **In the old time (with PHP 6.x), you can also use the php-memcache module to handle sessions. However, this seemed to stop working recently. I will update the following session when I get it back to work.**
 
-If you create an ElastiCache Memcached cluster with multiple nodes, your configuration would look like this:
+On the web server, install the php-memcache module:
+
+~~~~
+$ sudo apt-get install php-memcache
+~~~~
+
+Edit /etc/php/7.0/apache2/php.ini to use "memcache" as the session handler. You need to make the following modifications:
 
 ~~~~
 session.save_handler = memcache
@@ -216,7 +222,6 @@ memcache.session_redundancy=4
 Then you need to restart Apache the web server to make the new configuration effective.
 
 ~~~~
-$ sudo apt-get install php-memcache
 $ sudo service apache2 restart
 ~~~~
 
