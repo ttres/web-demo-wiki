@@ -188,7 +188,7 @@ On the web server, install the php-memcached module:
 $ sudo apt-get install php-memcached
 ~~~~
 
-Edit /etc/php/7.0/apache2/php.ini to use "memcached" as the session handler. You need to make the following modifications:
+Edit /etc/php/7.x/apache2/php.ini to use "memcached" as the session handler. You need to make the following modifications:
 
 ~~~~
 session.save_handler = memcached
@@ -209,14 +209,14 @@ On the web server, install the php-memcache module:
 $ sudo apt-get install php-memcache
 ~~~~
 
-Edit /etc/php/7.0/apache2/php.ini to use "memcache" as the session handler. You need to make the following modifications:
+Edit /etc/php/7.x/apache2/php.ini to use "memcache" as the session handler. You need to make the following modifications:
 
 ~~~~
 session.save_handler = memcache
 session.save_path = "tcp://elasticache-node1:11211,tcp://elasticache-node2:11211,tcp://elasticache-node3:11211"
 ~~~~
 
-Edit /etc/php/7.0/mods-available/memcache.ini, add the following two lines to support session redundancy. Please note that the value of memcache.session_redundancy equals to the number of cache nodes plus 1 (because of a [bug](https://bugs.php.net/bug.php?id=58585) in PHP). 
+Edit /etc/php/7.x/mods-available/memcache.ini, add the following two lines to support session redundancy. Please note that the value of memcache.session_redundancy equals to the number of cache nodes plus 1 (because of a [bug](https://bugs.php.net/bug.php?id=58585) in PHP). 
 
 ~~~~
 memcache.allow_failover=1
