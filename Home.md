@@ -178,21 +178,26 @@ Now, modify config.php with the new database server hostname, username, password
 
 We use ElastiCache to resolve the session sharing issue between multiple web servers. In the ElastiCache console, launch an ElastiCache cluster with Memcached (just 1 single node is enough) and obtain the endpoint information. Please make sure that the security group being used on the ElastiCache cluster allows inbound connection from your EC2 instance. 
 
-On the web server, configure php.ini to use Memcached for session sharing.
+On the web server, install the php-memcached module:
 
-Edit /etc/php/7.0/apache2/php.ini. Make the following modifications:
+~~~~
+$ sudo apt-get install php-memcached
+~~~~
+
+Edit /etc/php/7.0/apache2/php.ini to use memcached as the session handler. You need to make the following modifications:
 
 ~~~~
 session.save_handler = memcached
-session.save_path = "[dns-endpoint-to-the-elasticache-node]:11211"
+session.save_path = "[configuration-endpoint-to-the-elasticache-cluster]:11211"
 ~~~~
 
 Then you need to restart Apache the web server to make the new configuration effective.
 
 ~~~~
-$ sudo apt-get install php-memcached
 $ sudo service apache2 restart
 ~~~~
+
+**In the old time (with PHP 6.x), you can also use the php-memcache module to handle sessions. However, this seemed to stop working recently. I will update the following session when I get it back to work.**
 
 If you create an ElastiCache Memcached cluster with multiple nodes, your configuration would look like this:
 
@@ -201,7 +206,7 @@ session.save_handler = memcache
 session.save_path = "tcp://elasticache-node1:11211,tcp://elasticache-node2:11211,tcp://elasticache-node3:11211"
 ~~~~
 
-Edit /etc/php/7.0/mods-available/memcached.ini, add the following two lines to support session redundancy. Please note that the value of memcache.session_redundancy equals to the number of cache nodes plus 1 (because of a [bug](https://bugs.php.net/bug.php?id=58585) in PHP. 
+Edit /etc/php/7.0/mods-available/memcache.ini, add the following two lines to support session redundancy. Please note that the value of memcache.session_redundancy equals to the number of cache nodes plus 1 (because of a [bug](https://bugs.php.net/bug.php?id=58585) in PHP. 
 
 ~~~~
 memcache.allow_failover=1
