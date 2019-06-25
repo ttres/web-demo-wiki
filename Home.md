@@ -178,6 +178,10 @@ Now, modify config.php with the new database server hostname, username, password
 
 We use ElastiCache to resolve the session sharing issue between multiple web servers. In the ElastiCache console, launch an ElastiCache cluster with Memcached (just 1 single node is enough) and obtain the endpoint information. Please make sure that the security group being used on the ElastiCache cluster allows inbound connection from your EC2 instance. 
 
+In PHP, you can use either the php-memcached or the php-memcache module to handle sessions. 
+
+**(1) Using php-memcached**
+
 On the web server, install the php-memcached module:
 
 ~~~~
@@ -197,7 +201,7 @@ Then you need to restart Apache the web server to make the new configuration eff
 $ sudo service apache2 restart
 ~~~~
 
-**In the old time (with PHP 7.0 on Ubuntu 16.04), you can also use the php-memcache module to handle sessions. However, this seemed to stop working recently. I will update the following session when I get it back to work.**
+**(2) Using php-memcache**
 
 On the web server, install the php-memcache module:
 
@@ -223,6 +227,12 @@ Then you need to restart Apache the web server to make the new configuration eff
 
 ~~~~
 $ sudo service apache2 restart
+~~~~
+
+It should be noted that in PHP 7.0 **memcached.sess_prefix** is set to **memc.sess.key.**, while in PHP 7.2 **memcached.sess_prefix** is set to **memc.sess.**. The above-mentioned procedure worked out of the box with PHP 7.0. However, with PHP 7.2 you will need to add the following line in your index.php before session_start():
+
+~~~~
+ini_set('memcached.sess_prefix', 'memc.sess.');
 ~~~~
 
 **STEP 4b - (Optional) Create an ElastiCache Redis Cluster**
