@@ -261,19 +261,22 @@ This solution was tested on Ubuntu 18.04 with PHP 7.2.
 
 If you don't want to use MemCached, you can Redis to resolve the session sharing issue between multiple web servers. In the ElastiCache console, launch an ElastiCache cluster with Redis with the "Cluster Mode enabled" option and obtain the configuration endpoint information. Please make sure that the security group being used on the ElastiCache cluster allows inbound connection from your EC2 instance. 
 
-On the web server, configure php.ini to use Redis for session sharing.
+If you have not yet installed the php-redis module, you need to install it to make things work.
 
-Edit /etc/php/7.0/apache2/php.ini. Make the following modifications:
+~~~~
+$ sudo apt-get install php-redis
+~~~~
+
+On the web server, configure php.ini to use Redis for session sharing. Edit /etc/php/7.x/apache2/php.ini. Make the following modifications:
 
 ~~~~
 session.save_handler = rediscluster
 session.save_path = "seed[]=[configuration-endpoint-of-the-elasticache-redis-cluster:6379]"
 ~~~~
 
-If you have not yet installed the php-redis module, you need to install it to make things work. Then you need to restart Apache the web server to make the new configuration effective.
+Then you need to restart Apache the web server to make the new configuration effective.
 
 ~~~~
-$ sudo apt-get install php-redis
 $ sudo service apache2 restart
 ~~~~
 
