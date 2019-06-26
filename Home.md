@@ -229,7 +229,13 @@ Then you need to restart Apache the web server to make the new configuration eff
 $ sudo service apache2 restart
 ~~~~
 
-It should be noted that starting from PHP 7.1 the session handler in php-memcache return false or null if the session doesn't exists. This is a bug in the php-memcache module and needs to be fixed in the upstream. However, you can create a class which extended SessionHandler to solve the problem in index.php.
+The above-mentioned approach worked out of the box in PHP 7.0. It should be noted that starting from PHP 7.1 the session handler in php-memcache return false or null if the session doesn't exists. In this case, the php-memcache module would fail to read session data, with the following error message in /var/log/apache2/error.log:
+
+~~~~
+[Tue Jun 25 23:52:25.747169 2019] [php7:warn] [pid 15042] [client 54.240.193.1:48133] PHP Warning:  session_start(): Failed to read session data: memcache (path: tcp://elasticache-node1:11211,tcp://elasticache-node2:11211,tcp://elasticache-node3:11211) in /efs/web-demo/index.php on line 10, referer: http://13.236.179.144/web-demo/index.php
+~~~~
+
+This is a bug in the php-memcache module and needs to be fixed in the upstream. However, you can create a class which extended SessionHandler to solve the problem in index.php.
 
 Add the following code to index.php before calling session_start():
 
