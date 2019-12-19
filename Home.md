@@ -157,8 +157,10 @@ $ sudo ln -s /efs/web-demo web-demo
 
 Launch an RDS instance running MySQL. When launching the RDS instance, create a default database named “web_demo”. When the RDS instance becomes available. Please make sure that the security group being used on the RDS instance allows inbound connection from your EC2 instance. Then, connect to the RDS instance and create a user for your application. This time, when granting privileges, you need to grant external access for the user.
 
+Use the MySQL client to connect to the RDS instance. You specify a password when you create the RDS instance. If you do not specify a username when creating the RDS MySQL instance, then the default username is **admin**.
+
 ~~~~
-$ mysql -h [endpoint-of-rds-instance] -u root -p
+$ mysql -h [endpoint-of-rds-instance] -u admin -p
 mysql> CREATE DATABASE web_demo;
 mysql> CREATE USER 'username'@'%' IDENTIFIED BY 'password';
 mysql> GRANT ALL PRIVILEGES ON web_demo.* TO 'username'@'%';
@@ -178,9 +180,9 @@ Now, modify config.php with the new database server hostname, username, password
 
 We use ElastiCache to resolve the session sharing issue between multiple web servers. In the ElastiCache console, launch an ElastiCache cluster with Memcached (just 1 single node is enough) and obtain the endpoint information. Please make sure that the security group being used on the ElastiCache cluster allows inbound connection from your EC2 instance. 
 
-In PHP, you can use either the php-memcached or the php-memcache module to handle sessions. 
+In PHP, you can use either the php-memcached, php-memcache, or php-redis module to handle sessions. In this step, you only need to practise one of the following three options.
 
-**(1) Using php-memcached**
+**(Option 1) Using php-memcached**
 
 On the web server, install the php-memcached module:
 
@@ -201,7 +203,7 @@ Then you need to restart Apache the web server to make the new configuration eff
 $ sudo service apache2 restart
 ~~~~
 
-**(2) Using php-memcache**
+**(Optpion 2) Using php-memcache**
 
 On the web server, install the php-memcache module:
 
@@ -257,7 +259,7 @@ session_set_save_handler($myMemcachedSessionHandler);
 
 This solution was tested on Ubuntu 18.04 with PHP 7.2.
 
-**STEP 4b - (Optional) Create an ElastiCache Redis Cluster**
+**(Option 3) Using php-redis**
 
 If you don't want to use MemCached, you can Redis to resolve the session sharing issue between multiple web servers. In the ElastiCache console, launch an ElastiCache cluster with Redis with the "Cluster Mode enabled" option and obtain the configuration endpoint information. Please make sure that the security group being used on the ElastiCache cluster allows inbound connection from your EC2 instance. 
 
