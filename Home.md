@@ -178,11 +178,11 @@ Now, modify config.php with the new database server hostname, username, password
 
 **STEP 4 - Create an ElastiCache Memcached Cluster**
 
-We use ElastiCache to resolve the session sharing issue between multiple web servers. In the ElastiCache console, launch an ElastiCache cluster with Memcached (just 1 single node is enough) and obtain the endpoint information. Please make sure that the security group being used on the ElastiCache cluster allows inbound connection from your EC2 instance. 
-
-In PHP, you can use either the php-memcached, php-memcache, or php-redis module to handle sessions. In this step, you only need to practise one of the following three options.
+We use the ElastiCache service for session sharing between multiple web servers. In PHP, you can use either the php-memcached, php-memcache, or php-redis module to handle sessions. In this step, you only need to practise one of the following three options.
 
 **(Option 1) Using php-memcached**
+
+In the ElastiCache console, launch an ElastiCache cluster with Memcached (just 1 single node is enough) and obtain the endpoint information. Please make sure that the security group being used on the ElastiCache cluster allows inbound connection from your EC2 instance. 
 
 On the web server, install the php-memcached module:
 
@@ -204,6 +204,8 @@ $ sudo service apache2 restart
 ~~~~
 
 **(Optpion 2) Using php-memcache**
+
+In the ElastiCache console, launch an ElastiCache cluster with Memcached (just 1 single node is enough) and obtain the endpoint information. Please make sure that the security group being used on the ElastiCache cluster allows inbound connection from your EC2 instance. 
 
 On the web server, install the php-memcache module:
 
@@ -261,7 +263,7 @@ This solution was tested on Ubuntu 18.04 with PHP 7.2.
 
 **(Option 3) Using php-redis**
 
-If you don't want to use MemCached, you can Redis to resolve the session sharing issue between multiple web servers. In the ElastiCache console, launch an ElastiCache cluster with Redis with the "Cluster Mode enabled" option and obtain the configuration endpoint information. Please make sure that the security group being used on the ElastiCache cluster allows inbound connection from your EC2 instance. 
+In the ElastiCache console, launch an ElastiCache cluster with Redis with the "Cluster Mode enabled" option and obtain the configuration endpoint information. Please make sure that the security group being used on the ElastiCache cluster allows inbound connection from your EC2 instance. 
 
 If you have not yet installed the php-redis module, you need to install it to make things work.
 
