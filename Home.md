@@ -80,8 +80,8 @@ Then we create a MySQL database and a MySQL user for our demo. Here we use “we
 ~~~~
 $ sudo mysql
 mysql> CREATE DATABASE web_demo;
-mysql> CREATE USER 'username'@'localhost' IDENTIFIED BY 'password';
-mysql> GRANT ALL PRIVILEGES ON web_demo.* TO 'username'@'localhost';
+mysql> CREATE USER 'user.name'@'localhost' IDENTIFIED BY 'pass.word';
+mysql> GRANT ALL PRIVILEGES ON web_demo.* TO 'user.name'@'localhost';
 mysql> quit
 ~~~~
 
