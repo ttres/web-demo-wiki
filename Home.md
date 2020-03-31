@@ -1,4 +1,4 @@
-This is an entry level tutorial for engineers who wish to build a scalable web application but do not know how to get started. The demo application takes advantage of the various services offered by AWS such as Elastic Computer Cloud (EC2), Elastic Load Balancer (ELB), Relational Database Service (RDS), ElastiCache, Simple Storage Service (S3), Identity and Access Management (IAM), as well as CloudWatch and AutoScaling. By using AWS we are making things easier so that an engineer with a little experience with Linux can easily finish this tutorual in a couple of hours. If you are building a scalable web application on your own infrastructure or on another public cloud, the theory should be the same but the actual implementation might be somewhat different.
+This is an entry level tutorial for engineers who wish to build a scalable web application but do not know how to get started. The demo application takes advantage of the various services offered by AWS such as Elastic Computer Cloud (EC2), Elastic Load Balancer (ELB), Relational Database Service (RDS), ElastiCache, Simple Storage Service (S3), Identity and Access Management (IAM), as well as CloudWatch and AutoScaling. By using AWS we are making things easier so that an engineer with a little experience with Linux can easily finish this tutorial in a couple of hours. If you are building a scalable web application on your own infrastructure or on another public cloud, the theory should be the same but the actual implementation might be somewhat different.
 
 Please note that  the code provided here is for demo only and is not intended for production usage.
 
@@ -10,13 +10,13 @@ I want to build a scalable web application that can serve a large amount of user
 
 (1) User authentication (login / logout).
 
-(2) Logined users can upload photos.
+(2) Authenticated users can upload photos.
 
 (3) The default page displays the latest N uploaded photos.
 
 In this tutorial, we will accomplish this goal through the following five levels:
 
-(0) A basic version with all the components deployed on one single server. The web application is developed with PHP, using Apache as the web serer, with MySQL as the database to store user upload information.
+(0) A basic version with all the components deployed on one single server. The web application is developed with PHP, using Apache as the web server, with MySQL as the database to store user upload information.
 
 (1) Based on the basic version we developed in level (0), scale the application to two or more servers.
 
@@ -34,7 +34,7 @@ In this tutorial, we will accomplish this goal through the following five levels
 
 ![LEVEL 0](http://www.qyjohn.net/wp-content/uploads/2017/03/Slide3.png)
 
-In this level, we will build a basic version with all the components deployed on one single server. The web application is developed with PHP, using Apache as the web serer, with MySQL as the database to store user upload information. You do not need to write any code, because I have a set of demo code prepared for you. You just need to launch an EC2 instance, carry out some basic configurations, then deploy the demo code.
+In this level, we will build a basic version with all the components deployed on one single server. The web application is developed with PHP, using Apache as the web server, with MySQL as the database to store user upload information. You do not need to write any code, because I have a set of demo code prepared for you. You just need to launch an EC2 instance, carry out some basic configurations, then deploy the demo code.
 
 Login to your AWS Console and navigate to the EC2 Console. Launch an EC2 instance with an Ubuntu 18.04 AMI. Make sure that you allocate a public IP to your EC2 instance. In your security group settings, open port 80 for HTTP and port 22 for SSH access. After the instance becomes “running” and passes health checks, SSH into your EC2 instance to setup software dependencies and download the demo code from Github to the default web server folder:
 
@@ -178,7 +178,7 @@ Now, modify config.php with the new database server hostname, username, password
 
 **STEP 4 - Create an ElastiCache Memcached Cluster**
 
-We use the ElastiCache service for session sharing between multiple web servers. In PHP, you can use either the php-memcached, php-memcache, or php-redis module to handle sessions. In this step, you only need to practise one of the following three options.
+We use the ElastiCache service for session sharing between multiple web servers. In PHP, you can use either the php-memcached, php-memcache, or php-redis module to handle sessions. In this step, you only need to practice one of the following three options.
 
 **(Option 1) Using php-memcached**
 
@@ -414,7 +414,7 @@ The following code is responsible of handling this cache logic:
 // Get the most recent N images
 if ($enable_cache)
 {
-	// Attemp to get the cached records for the front page
+	// Attempt to get the cached records for the front page
 	$images_html = $cache->get($cache_key);
 	if (!$images_html)
 	{
